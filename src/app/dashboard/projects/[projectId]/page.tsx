@@ -37,8 +37,9 @@ export default async function ProjectDetailPage({
     }
   > | null;
   try {
+    const { projectId } = await params;
     project = await Project.findOne({
-      _id: params.projectId,
+      _id: projectId,
       companyId: session.user.companyId,
     })
       .populate("inspectorId", "name email")
@@ -55,8 +56,9 @@ export default async function ProjectDetailPage({
       >();
   } catch (error) {
     // If population fails, try without mitTechId
+    const { projectId } = await params;
     project = await Project.findOne({
-      _id: params.projectId,
+      _id: projectId,
       companyId: session.user.companyId,
     })
       .populate("inspectorId", "name email")
@@ -145,7 +147,7 @@ export default async function ProjectDetailPage({
   }
 
   // Calculate total project cost
-  const areas = await Area.find({ projectId: params.projectId }).lean();
+  const areas = await Area.find({ projectId: (await params).projectId }).lean();
   let totalProjectCost = 0;
   let areaCosts = [];
 

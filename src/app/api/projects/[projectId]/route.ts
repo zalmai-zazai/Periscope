@@ -8,11 +8,12 @@ import LineItem from "@/models/LineItem";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { projectId: string } }
+  { params }: { params: Promise<{ projectId: string }> } // ⚠️ params is a Promise in App Router
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const { projectId } = await params; // ✅ await params first
 
+    const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -21,7 +22,7 @@ export async function DELETE(
 
     // Verify project exists and user has access
     const project = await Project.findOne({
-      _id: params.projectId,
+      _id: projectId,
       companyId: session.user.companyId,
     });
 
@@ -39,22 +40,20 @@ export async function DELETE(
 
     if (!canDelete) {
       return NextResponse.json(
-        {
-          error: "You do not have permission to delete this project",
-        },
+        { error: "You do not have permission to delete this project" },
         { status: 403 }
       );
     }
 
     // Delete all related data (areas and line items)
-    const areas = await Area.find({ projectId: params.projectId });
+    const areas = await Area.find({ projectId });
 
     for (const area of areas) {
       await LineItem.deleteMany({ areaId: area._id });
     }
 
-    await Area.deleteMany({ projectId: params.projectId });
-    await Project.deleteOne({ _id: params.projectId });
+    await Area.deleteMany({ projectId });
+    await Project.deleteOne({ _id: projectId });
 
     return NextResponse.json({
       success: true,
