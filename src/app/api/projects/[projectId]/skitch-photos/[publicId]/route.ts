@@ -18,21 +18,34 @@ export async function DELETE(
 
     const { projectId, publicId } = await params;
 
+    // DECODE the publicId to handle slashes
+    const decodedPublicId = decodeURIComponent(publicId);
+
+    console.log("🔍 DELETE DEBUG - projectId:", projectId);
+    console.log("🔍 DELETE DEBUG - decodedPublicId:", decodedPublicId);
+
     await dbConnect();
 
     // Verify project exists and user has access
     const project = await Project.findOne({ _id: projectId });
 
     if (!project || project.companyId.toString() !== session.user.companyId) {
+      console.log("❌ Project not found or no access");
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
+    console.log("🔍 Project found, skitchPhotos:", project.skitchPhotos);
+
     // Find the skitch photo to delete
     const skitchPhoto = project.skitchPhotos.find(
-      (photo: any) => photo.publicId === publicId
+      (photo: any) => photo.publicId === decodedPublicId
     );
 
+    console.log("🔍 Looking for photo with publicId:", decodedPublicId);
+    console.log("🔍 Found skitchPhoto:", skitchPhoto);
+
     if (!skitchPhoto) {
+      console.log("❌ Skitch photo not found in database");
       return NextResponse.json(
         { error: "Skitch photo not found" },
         { status: 404 }

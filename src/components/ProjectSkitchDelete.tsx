@@ -27,14 +27,24 @@ export function ProjectSkitchDelete({
     setDeleting(true);
 
     try {
+      console.log("🔄 Deleting skitch photo with publicId:", publicId);
+      console.log("🔄 Project ID:", projectId);
+
+      // URL encode the publicId to handle slashes
+      const encodedPublicId = encodeURIComponent(publicId);
+      console.log("🔄 Encoded publicId:", encodedPublicId);
+
       const response = await fetch(
-        `/api/projects/${projectId}/skitch-photos/${publicId}`,
+        `/api/projects/${projectId}/skitch-photos/${encodedPublicId}`,
         {
           method: "DELETE",
         }
       );
 
+      console.log("📡 Delete response status:", response.status);
+
       const result = await response.json();
+      console.log("📡 Delete response data:", result);
 
       if (result.success) {
         onSkitchPhotoDeleted();
@@ -42,6 +52,7 @@ export function ProjectSkitchDelete({
         alert(result.error || "Failed to delete skitch photo");
       }
     } catch (error) {
+      console.error("💥 Delete error:", error);
       alert("Failed to delete skitch photo");
     } finally {
       setDeleting(false);
@@ -62,10 +73,11 @@ export function ProjectSkitchDelete({
         className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity border-2 border-purple-200 dark:border-purple-800"
         onClick={handleImageClick}
       />
+      {/* Remove opacity-0 group-hover:opacity-100 to always show the button */}
       <button
         onClick={handleDelete}
         disabled={deleting}
-        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50 text-xs w-6 h-6 flex items-center justify-center"
+        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full transition-opacity disabled:opacity-50 text-xs w-6 h-6 flex items-center justify-center"
       >
         {deleting ? "..." : "×"}
       </button>
