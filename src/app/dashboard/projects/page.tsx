@@ -283,7 +283,7 @@ export default async function ProjectsPage({
                 <tbody>
                   {projects.map((project) => (
                     <tr
-                      key={project._id.toString()}
+                      key={(project._id as string).toString()}
                       className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                       <td className="p-4 text-gray-900 dark:text-white">

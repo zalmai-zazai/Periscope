@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 interface AddLineItemFormProps {
   areaId: string;
   projectId: string;
+  userRole?: string;
 }
 
 interface CatalogItem {

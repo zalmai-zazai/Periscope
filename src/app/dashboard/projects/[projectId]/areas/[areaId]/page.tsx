@@ -2,9 +2,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { redirect } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
-import Area from "@/models/Area";
+import Area, { IArea } from "@/models/Area";
+import { Lean } from "@/types/mongoose";
 import Project from "@/models/Project";
-import LineItem from "@/models/LineItem";
+import LineItem, { ILineItem } from "@/models/LineItem";
+import mongoose from "mongoose";
 import Link from "next/link";
 import { LogoutButton } from "@/components/LogoutButton";
 import { AddLineItemForm } from "./AddLineItemForm";
@@ -36,7 +38,7 @@ export default async function AreaDetailPage({
     projectId: projectId,
   })
     .populate("projectId")
-    .lean();
+    .lean<Lean<IArea> | null>();
 
   if (!area) {
     redirect("/dashboard/projects");
@@ -58,7 +60,7 @@ export default async function AreaDetailPage({
 
   const lineItems = await LineItem.find({ areaId: areaId })
     .sort({ createdAt: 1 })
-    .lean();
+    .lean<Lean<ILineItem>[]>();
 
   // Check if estimator can add new items (based on company setting)
   const canEstimatorAddItems =

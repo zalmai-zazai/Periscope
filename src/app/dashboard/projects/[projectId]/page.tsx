@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { redirect } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
-import Project from "@/models/Project";
+import Project, { IProject } from "@/models/Project";
 import Area from "@/models/Area";
 import LineItem from "@/models/LineItem";
 import Link from "next/link";
@@ -10,10 +10,11 @@ import { LogoutButton } from "@/components/LogoutButton";
 import { AddAreaForm } from "./AddAreaForm";
 import { ProjectActions } from "@/components/ProjectActions";
 import Company from "@/models/Company";
-import { ReportGenerator } from "@/components/reports/ReportGenerator";
+// import { ReportGenerator } from "@/components/reports/ReportGenerator";
 import { ProjectSkitchUpload } from "@/components/ProjectSkitchUpload";
 import { ProjectSkitchDisplay } from "@/components/ProjectSkitchDisplay";
-
+import mongoose from "mongoose";
+type Lean<T> = Omit<T, keyof mongoose.Document> & { _id: string };
 export default async function ProjectDetailPage({
   params,
 }: {
@@ -28,7 +29,13 @@ export default async function ProjectDetailPage({
   await dbConnect();
 
   // Get project with areas AND all assignee info
-  let project;
+  let project: Lean<
+    IProject & {
+      inspectorId?: { _id: string; name: string; email?: string };
+      mitTechId?: { _id: string; name: string; email?: string };
+      estimatorId?: { _id: string; name: string; email?: string };
+    }
+  > | null;
   try {
     project = await Project.findOne({
       _id: params.projectId,
@@ -37,7 +44,15 @@ export default async function ProjectDetailPage({
       .populate("inspectorId", "name email")
       .populate("mitTechId", "name email")
       .populate("estimatorId", "name email")
-      .lean();
+      .lean<
+        Lean<
+          IProject & {
+            inspectorId?: { _id: string; name: string; email?: string };
+            mitTechId?: { _id: string; name: string; email?: string };
+            estimatorId?: { _id: string; name: string; email?: string };
+          }
+        >
+      >();
   } catch (error) {
     // If population fails, try without mitTechId
     project = await Project.findOne({
@@ -45,8 +60,17 @@ export default async function ProjectDetailPage({
       companyId: session.user.companyId,
     })
       .populate("inspectorId", "name email")
+      .populate("mitTechId", "name email")
       .populate("estimatorId", "name email")
-      .lean();
+      .lean<
+        Lean<
+          IProject & {
+            inspectorId?: { _id: string; name: string; email?: string };
+            mitTechId?: { _id: string; name: string; email?: string };
+            estimatorId?: { _id: string; name: string; email?: string };
+          }
+        >
+      >();
   }
 
   // Get company settings
@@ -426,7 +450,7 @@ export default async function ProjectDetailPage({
                 <div className="divide-y divide-gray-200 dark:divide-gray-700">
                   {areas.map((area) => (
                     <div
-                      key={area._id.toString()}
+                      key={String(area._id)}
                       className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                       <div className="flex justify-between items-start">

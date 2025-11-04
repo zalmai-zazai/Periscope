@@ -7,6 +7,7 @@ import { PendingInvites } from "@/components/PendingInvites";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import { ThemeToggle } from "@/components/theme-toggle";
+
 import Project from "@/models/Project";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { EnhancedMetricsPanel } from "@/components/EnhancedMetricsPanel";
@@ -31,7 +32,7 @@ export default async function DashboardPage() {
   const projectsCount = await Project.countDocuments({
     companyId: session.user.companyId,
   });
-  let query: any = { companyId: session.user.companyId };
+  const query: any = { companyId: session.user.companyId };
   // Your existing role-based filtering...
   if (session.user?.role === "inspector") {
     query.inspectorId = session.user.id;

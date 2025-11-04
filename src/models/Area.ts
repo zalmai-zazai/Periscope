@@ -113,7 +113,7 @@ const AreaSchema: Schema = new Schema(
 // Calculate totalArea before saving
 AreaSchema.pre("save", function (next) {
   if (this.length && this.width) {
-    this.totalArea = this.length * this.width;
+    this.totalArea = Number(this.length ?? 0) * Number(this.width ?? 0);
   }
   next();
 });
