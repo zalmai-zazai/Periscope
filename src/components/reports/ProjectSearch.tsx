@@ -73,8 +73,8 @@ export function ProjectSearch({
       {searchQuery && resultCount === 0 && (
         <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-md">
           <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            No projects found matching "
-            <span className="font-medium">{searchQuery}</span>"
+            No projects found matching
+            <span className="font-medium">{searchQuery}</span>
           </p>
           <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
             Try searching by project name, project number, or client name

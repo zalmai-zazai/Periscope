@@ -108,7 +108,7 @@ export default function SignInForm() {
 
         <div className="text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <a
               href="/auth/signup"
               className="text-blue-600 hover:text-blue-500"

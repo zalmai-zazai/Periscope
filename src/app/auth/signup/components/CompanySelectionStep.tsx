@@ -37,7 +37,7 @@ export function CompanySelectionStep({
         Company Setup
       </h3>
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        Choose how you'd like to set up your company access
+        Choose how you&apos;d like to set up your company access
       </p>
 
       {/* Option Cards */}
@@ -68,8 +68,8 @@ export function CompanySelectionStep({
                 Create New Company
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                You're the first person from your organization. You'll become
-                the company admin.
+                You&apos;re the first person from your organization. You&apos;ll
+                become the company admin.
               </p>
 
               {companySelection.option === "create" && (
