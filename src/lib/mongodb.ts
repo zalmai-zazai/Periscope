@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+declare global {
+  // Declare global.mongoose so TS knows the cache shape
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  var mongoose:
+    | {
+        conn: mongoose.Mongoose | null;
+        promise: Promise<mongoose.Mongoose> | null;
+      }
+    | undefined;
+}
+
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/property-damage-saas";
 
@@ -9,16 +20,12 @@ if (!MONGODB_URI) {
   );
 }
 
-/**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
- */
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+// Ensure global cache object exists (prevents multiple connections in dev)
+if (!global.mongoose) {
+  global.mongoose = { conn: null, promise: null };
 }
+
+let cached = global.mongoose;
 
 async function dbConnect() {
   if (cached.conn) {
