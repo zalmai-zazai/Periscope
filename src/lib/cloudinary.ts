@@ -1,4 +1,4 @@
-import cloudinary from "cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 // In your cloudinary.ts, add console logs:
 export async function uploadImage(imageFile: File) {
   console.log("🔄 Starting Cloudinary upload...");
