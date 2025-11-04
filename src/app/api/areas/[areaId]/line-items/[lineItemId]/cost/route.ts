@@ -1,13 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import dbConnect from "@/lib/mongodb";
 import LineItem from "@/models/LineItem";
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { areaId: string; lineItemId: string } }
 ) {
+  const { areaId, lineItemId } = await params;
   try {
     const session = await getServerSession(authOptions);
 
@@ -31,15 +32,15 @@ export async function PUT(
       );
     }
     console.log("Cost update request:", {
-      areaId: params.areaId,
-      lineItemId: params.lineItemId,
+      areaId: areaId,
+      lineItemId: lineItemId,
       unitCost,
       sessionUser: session.user.id,
     });
     // Get the line item and verify it belongs to the area
     const lineItem = await LineItem.findOne({
-      _id: params.lineItemId,
-      areaId: params.areaId,
+      _id: lineItemId,
+      areaId: areaId,
     });
     console.log("Found line item:", lineItem ? "Yes" : "No");
     if (!lineItem) {
@@ -54,7 +55,7 @@ export async function PUT(
 
     // Update with cost data
     const updatedLineItem = await LineItem.findByIdAndUpdate(
-      params.lineItemId,
+      lineItemId,
       {
         unitCost,
         totalCost,
