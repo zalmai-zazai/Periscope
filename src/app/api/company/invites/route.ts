@@ -6,7 +6,7 @@ import Company from "@/models/Company";
 import User from "@/models/User";
 import Invite from "@/models/Invite";
 import { sendEmail } from "@/lib/email";
-
+import crypto from "crypto";
 // GET /api/company/invites - Get pending invites
 export async function GET(request: Request) {
   try {
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
     }
 
     // Generate unique token
-    const token = require("crypto").randomBytes(32).toString("hex");
+    const token = crypto.randomBytes(32).toString("hex");
 
     // Create invite (expires in 7 days)
     const expiresAt = new Date();
