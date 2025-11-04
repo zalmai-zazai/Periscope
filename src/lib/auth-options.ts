@@ -77,21 +77,42 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       // Add role and companyId to token on sign in
       if (user) {
-        token.role = user.role;
-        token.companyId = user.companyId;
+        // user can be AdapterUser | YourUserModel — cast locally for these custom fields
+        const u = user as any;
+        if (u.role) {
+          token.role = u.role;
+        }
+        if (u.companyId) {
+          // ensure companyId is a string (mongoose ObjectId may be an object)
+          token.companyId =
+            typeof u.companyId === "string" ? u.companyId : String(u.companyId);
+        }
       }
       return token;
     },
     async session({ session, token }) {
       // Add role and companyId to session
       if (token) {
-        session.user.id = token.sub!;
-        session.user.role = token.role as string;
-        session.user.companyId = token.companyId as string;
+        // Ensure session.user object exists (defensive)
+        session.user = session.user ?? ({} as any);
+
+        // token.sub is the user id set by next-auth
+        if (token.sub) {
+          session.user.id = token.sub;
+        }
+
+        // token.role / token.companyId may be undefined, so guard
+        if ((token as any).role) {
+          session.user.role = (token as any).role as string;
+        }
+        if ((token as any).companyId) {
+          session.user.companyId = (token as any).companyId as string;
+        }
       }
       return session;
     },
   },
+
   pages: {
     signIn: "/auth/signin",
     signUp: "/auth/signup",
