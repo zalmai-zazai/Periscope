@@ -13,6 +13,7 @@ import { MetricsPanel } from "@/components/MetricsPanel";
 import { EnhancedMetricsPanel } from "@/components/EnhancedMetricsPanel";
 import { KPIPanel } from "@/components/KPIPanel";
 import { AttentionProjects } from "@/components/AttentionProjects";
+import Navbar from "@/components/Navbar";
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   // Test comment: working in local-build-debug branch
@@ -473,36 +474,12 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Dashboard
-            </h1>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600 dark:text-gray-300">
-                Welcome, {session.user?.name}!
-              </span>
-              <span
-                className={`px-2 py-1 text-xs rounded-full capitalize ${
-                  isAdmin
-                    ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
-                    : "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
-                }`}
-              >
-                {session.user?.role}
-              </span>
-              <ThemeToggle />
-              <LogoutButton />
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar isAdmin={isAdmin} session={session} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Role-based welcome message */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {isAdmin
               ? "Company Admin Dashboard"
               : isEstimator
@@ -511,7 +488,7 @@ export default async function DashboardPage() {
               ? "Inspector Dashboard"
               : "Mitigation Tech Dashboard"}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
             {isAdmin
               ? "Manage your company, team members, and projects."
               : "Create and manage property damage assessment projects."}

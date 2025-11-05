@@ -174,26 +174,43 @@ export default async function ProjectsPage({
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <Link
-            href="/dashboard"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            ← Back to Dashboard
-          </Link>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-blue-600 dark:text-white">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+          {/* Top row for Back link and Create button on mobile */}
+          <div className="flex justify-between items-center w-full sm:w-auto order-1">
+            {/* Back to Dashboard Link */}
+            <Link
+              href="/dashboard"
+              className="text-blue-600 dark:text-blue-400 hover:underline text-sm sm:text-base"
+            >
+              ← Back to Dashboard
+            </Link>
+
+            {/* Create Project Button - shows on right on mobile */}
+            {canCreateProjects && (
+              <Link
+                href="/dashboard/projects/create"
+                className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:hidden whitespace-nowrap"
+              >
+                Create Project
+              </Link>
+            )}
+          </div>
+
+          {/* Title and Description */}
+          <div className="text-center order-2 w-full sm:w-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-white">
               {getPageTitle()}
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 mt-1">
+            <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm sm:text-base">
               {getPageDescription()}
             </p>
           </div>
 
+          {/* Create Project Button - shows on right on desktop */}
           {canCreateProjects && (
             <Link
               href="/dashboard/projects/create"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-base hidden sm:block whitespace-nowrap order-3"
             >
               Create Project
             </Link>

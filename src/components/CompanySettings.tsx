@@ -122,11 +122,10 @@ export function CompanySettings({ initialCompany }: CompanySettingsProps) {
         <div className="flex items-center justify-between">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Allow Estimators to Edit Submitted Projects
+              Allow Estimators to Edit and Add Costs
             </label>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              When enabled, estimators can add/update areas and line items in
-              submitted projects
+              estimators can add/update areas and line items in projects
             </p>
           </div>
 

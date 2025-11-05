@@ -90,22 +90,27 @@ export function ReportsDashboard({
   return (
     <div className="space-y-6">
       {/* Header Section - Matching your Projects page exactly */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+        {/* Back to Dashboard Link - Left on desktop, top-left on mobile */}
         <Link
           href="/dashboard"
-          className="text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-blue-600 dark:text-blue-400 hover:underline text-sm sm:text-base order-1 sm:order-1 self-start sm:self-auto"
         >
           ← Back to Dashboard
         </Link>
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-blue-600 dark:text-white">
+
+        {/* Title and Description - Center on both mobile and desktop */}
+        <div className="text-center order-2 sm:order-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-white">
             {getPageTitle()}
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">
+          <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm sm:text-base">
             {getPageDescription()}
           </p>
         </div>
-        <div className="w-24"></div> {/* Spacer for balance */}
+
+        {/* Spacer - Hidden on mobile, visible on desktop */}
+        <div className="hidden sm:block w-24 order-3 sm:order-3"></div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

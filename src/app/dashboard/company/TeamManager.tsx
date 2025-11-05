@@ -251,33 +251,36 @@ export function TeamManager({ initialUsers }: TeamManagerProps) {
             {users.map((user) => (
               <div
                 key={user._id}
-                className={`flex items-center justify-between p-4 rounded-lg ${
+                className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg ${
                   user.isActive
                     ? "bg-gray-50 dark:bg-gray-700"
                     : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
                 }`}
               >
-                <div className="flex-1">
+                {/* User Info Section */}
+                <div className="flex-1 mb-3 sm:mb-0">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
                       <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-medium ${
+                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-medium text-sm sm:text-base ${
                           user.isActive ? "bg-blue-500" : "bg-gray-400"
                         }`}
                       >
                         {user.name.charAt(0).toUpperCase()}
                       </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {user.name}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-medium text-gray-900 dark:text-white truncate">
+                          {user.name}
+                        </p>
                         {!user.isActive && (
-                          <span className="ml-2 text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">
+                          <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded flex-shrink-0">
                             Suspended
                           </span>
                         )}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                         {user.email}
                       </p>
                       {!user.isActive && (
@@ -289,19 +292,23 @@ export function TeamManager({ initialUsers }: TeamManagerProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3">
-                  <span
-                    className={`px-3 py-1 text-xs rounded-full capitalize ${getRoleBadgeColor(
-                      user.role
-                    )}`}
-                  >
-                    {getRoleDisplayName(user.role)}
-                  </span>
+                {/* Role and Actions Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-3">
+                  {/* Role Badge */}
+                  <div className="self-start sm:self-auto">
+                    <span
+                      className={`px-2 py-1 text-xs rounded-full capitalize ${getRoleBadgeColor(
+                        user.role
+                      )}`}
+                    >
+                      {getRoleDisplayName(user.role)}
+                    </span>
+                  </div>
 
                   {/* Action buttons */}
-                  <div className="flex space-x-1">
+                  <div className="flex flex-wrap gap-1 sm:flex-nowrap sm:space-x-1">
                     <button
-                      className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                      className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex-1 sm:flex-none"
                       onClick={() => handleEditClick(user)}
                       disabled={!user.isActive}
                     >
@@ -310,14 +317,14 @@ export function TeamManager({ initialUsers }: TeamManagerProps) {
 
                     {user.isActive ? (
                       <button
-                        className="px-2 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors"
+                        className="px-2 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors flex-1 sm:flex-none"
                         onClick={() => handleSuspendUser(user)}
                       >
                         Suspend
                       </button>
                     ) : (
                       <button
-                        className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                        className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex-1 sm:flex-none"
                         onClick={() => handleUnsuspendUser(user)}
                       >
                         Unsuspend
@@ -326,7 +333,7 @@ export function TeamManager({ initialUsers }: TeamManagerProps) {
 
                     {user.isActive && (
                       <button
-                        className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                        className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex-1 sm:flex-none"
                         onClick={() => handleRemoveUser(user)}
                       >
                         Remove

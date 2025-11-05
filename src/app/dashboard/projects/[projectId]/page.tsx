@@ -277,57 +277,78 @@ export default async function ProjectDetailPage({
         </div>
 
         {/* Project Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 mb-6">
+          {/* Main container - side by side on ALL screens */}
+          <div className="flex flex-row justify-between gap-4">
+            {/* Left Side - Project Info */}
+            <div className="flex-1 min-w-0">
+              {" "}
+              {/* min-w-0 prevents overflow */}
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white break-words">
                 {project.name}
               </h1>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">
+              <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm sm:text-base break-words">
                 {project.address}
               </p>
-              <div className="flex items-center space-x-4 mt-2">
+              {/* Status and Assigned Users - With proper gaps */}
+              <div className="mt-3 space-y-2">
                 <span
-                  className={`px-3 py-1 text-sm rounded-full ${getStatusColor(
+                  className={`px-3 py-1 text-sm sm:text-base rounded-full ${getStatusColor(
                     project.status
                   )}`}
                 >
                   {getStatusLabel(project.status)}
                 </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Inspector: {(project.inspectorId as any)?.name}
-                </span>
-                {/* SHOW MITIGATION TECH IF ASSIGNED */}
-                {project.mitTechId && (
-                  <span className="text-sm text-orange-500 dark:text-orange-400">
-                    Mit Tech: {(project.mitTechId as any)?.name}
-                  </span>
-                )}
-                {/* SHOW ESTIMATOR IF ASSIGNED */}
-                {project.estimatorId && (
-                  <span className="text-sm text-purple-500 dark:text-purple-400">
-                    Estimator: {(project.estimatorId as any)?.name}
-                  </span>
-                )}
+
+                <div className="space-y-1  mt-2 text-sm sm:text-base">
+                  <div className="text-gray-600 dark:text-gray-400">
+                    <span className="font-medium">Inspector:</span>{" "}
+                    {(project.inspectorId as any)?.name}
+                  </div>
+
+                  {project.mitTechId && (
+                    <div className="text-orange-600 dark:text-orange-400">
+                      <span className="font-medium">Mit Tech:</span>{" "}
+                      {(project.mitTechId as any)?.name}
+                    </div>
+                  )}
+
+                  {project.estimatorId && (
+                    <div className="text-purple-600 dark:text-purple-400">
+                      <span className="font-medium">Estimator:</span>{" "}
+                      {(project.estimatorId as any)?.name}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Created: {new Date(project.createdAt).toLocaleDateString()}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Client: {project.clientName}
-              </p>
 
-              {/* SHOW PROJECT COST IF AVAILABLE */}
+            {/* Right Side - Meta Info and Actions - With proper gaps */}
+            <div className="flex flex-col items-end gap-3 min-w-[140px] sm:min-w-[160px]">
+              {/* Created and Client Info - With labels */}
+              <div className="text-right space-y-1">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Created: </span>
+
+                  {new Date(project.createdAt).toLocaleDateString()}
+                </p>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                  <span className="font-medium">Client: </span>
+
+                  {project.clientName}
+                </p>
+              </div>
+
+              {/* Project Cost */}
               {totalProjectCost > 0 && (
-                <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded-md">
-                  <p className="text-lg font-bold text-green-700 dark:text-green-300">
-                    Total Project Cost: ${totalProjectCost.toFixed(2)}
+                <div className="px-3 py-2 bg-green-50 dark:bg-green-900/20 rounded-md">
+                  <p className="text-sm sm:text-lg font-bold text-green-700 dark:text-green-300">
+                    ${totalProjectCost.toFixed(2)}
                   </p>
                 </div>
               )}
 
+              {/* Project Actions */}
               <ProjectActions
                 projectId={project._id.toString()}
                 userRole={session.user?.role}
@@ -345,28 +366,28 @@ export default async function ProjectDetailPage({
           {/* COST BREAKDOWN SECTION */}
           {totalProjectCost > 0 && (
             <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Cost Breakdown
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {areaCosts.map((areaCost, index) => (
                   <div
                     key={index}
-                    className="bg-white dark:bg-gray-600 p-3 rounded-md shadow-sm"
+                    className="bg-white dark:bg-gray-600 p-4 rounded-md shadow-sm"
                   >
-                    <p className="font-medium text-gray-900 dark:text-white">
+                    <p className="font-medium text-gray-900 dark:text-white text-base sm:text-lg">
                       {areaCost.areaName}
                     </p>
-                    <p className="text-green-600 dark:text-green-400 font-semibold">
+                    <p className="text-green-600 dark:text-green-400 font-semibold text-base sm:text-lg mt-1">
                       ${areaCost.cost.toFixed(2)}
                     </p>
                   </div>
                 ))}
-                <div className="bg-white dark:bg-gray-600 p-3 rounded-md shadow-sm border-2 border-green-200 dark:border-green-800">
-                  <p className="font-bold text-gray-900 dark:text-white">
+                <div className="bg-white dark:bg-gray-600 p-4 rounded-md shadow-sm border-2 border-green-200 dark:border-green-800 col-span-full sm:col-span-1">
+                  <p className="font-bold text-gray-900 dark:text-white text-base sm:text-lg">
                     Total Project
                   </p>
-                  <p className="text-green-700 dark:text-green-300 font-bold text-lg">
+                  <p className="text-green-700 dark:text-green-300 font-bold text-xl sm:text-2xl mt-1">
                     ${totalProjectCost.toFixed(2)}
                   </p>
                 </div>

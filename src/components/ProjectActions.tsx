@@ -24,7 +24,6 @@ export function ProjectActions({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAdminDropdown, setShowAdminDropdown] = useState(false);
 
-  // Check if user can delete this project
   const canDeleteProject = () => {
     if (userRole === "admin" || userRole === "super-admin") return true;
     if (userRole === "project-manager") return true;
@@ -59,27 +58,24 @@ export function ProjectActions({
     }
   };
 
-  // Get available actions for current role - SEPARATE delete from status actions
   const getAvailableActions = () => {
     const statusActions = [];
     let deleteAction = null;
 
-    // Delete action if user has permission (store separately)
     if (canDeleteProject()) {
       deleteAction = {
-        label: "Delete Project",
+        label: "Delete",
         status: "delete",
         buttonStyle: "bg-red-600 hover:bg-red-700 text-white",
         isDelete: true,
       };
     }
 
-    // Role-based status actions
     switch (userRole) {
       case "inspector":
         if (isProjectOwner && projectStatus === "draft") {
           statusActions.push({
-            label: "Submit for Field Review",
+            label: "Submit for Review",
             status: "needs_field_review",
             buttonStyle: "bg-blue-600 hover:bg-blue-700 text-white",
           });
@@ -95,7 +91,7 @@ export function ProjectActions({
           });
         } else if (projectStatus === "field_in_progress" && isMitTechAssigned) {
           statusActions.push({
-            label: "Complete Field Work",
+            label: "Complete Work",
             status: "ready_for_estimate",
             buttonStyle: "bg-purple-600 hover:bg-purple-700 text-white",
           });
@@ -105,7 +101,7 @@ export function ProjectActions({
       case "estimator":
         if (projectStatus === "ready_for_estimate") {
           statusActions.push({
-            label: "Start Estimating",
+            label: "Start Estimate",
             status: "estimating",
             buttonStyle: "bg-indigo-600 hover:bg-indigo-700 text-white",
           });
@@ -120,53 +116,39 @@ export function ProjectActions({
 
       case "admin":
       case "super-admin":
-        // Admin gets all status options in dropdown
         const adminActions = [
-          {
-            status: "draft",
-            label: "Move to Draft",
-            description: "Reset project",
-          },
+          { status: "draft", label: "Draft", description: "Reset project" },
           {
             status: "needs_field_review",
-            label: "Send to Field Review",
-            description: "Assign to mitigation tech",
+            label: "Field Review",
+            description: "Assign to tech",
           },
           {
             status: "field_in_progress",
-            label: "Start Field Work",
-            description: "Field work in progress",
+            label: "Field Work",
+            description: "Work in progress",
           },
           {
             status: "ready_for_estimate",
-            label: "Ready for Estimate",
+            label: "Ready",
             description: "Ready for estimator",
           },
           {
             status: "estimating",
-            label: "Start Estimating",
+            label: "Estimating",
             description: "Estimation in progress",
           },
-          {
-            status: "sent",
-            label: "Mark as Sent",
-            description: "Send to client",
-          },
+          { status: "sent", label: "Sent", description: "Sent to client" },
         ].filter((action) => action.status !== projectStatus);
 
         statusActions.push(...adminActions);
         break;
     }
 
-    return {
-      statusActions,
-      deleteAction,
-    };
+    return { statusActions, deleteAction };
   };
 
   const { statusActions, deleteAction } = getAvailableActions();
-
-  // DEBUG: Keep this to verify
 
   const updateStatus = async (newStatus: string) => {
     if (newStatus === "delete") {
@@ -176,7 +158,7 @@ export function ProjectActions({
 
     setLoading(true);
     setError("");
-    setShowAdminDropdown(false); // Close dropdown after selection
+    setShowAdminDropdown(false);
 
     try {
       const response = await fetch(`/api/projects/${projectId}/status`, {
@@ -200,16 +182,14 @@ export function ProjectActions({
     }
   };
 
-  // Don't show actions if no available actions
   const hasStatusActions = statusActions.length > 0;
   const hasDeleteAction = !!deleteAction;
 
   if (!hasStatusActions && !hasDeleteAction) {
-    console.log("DEBUG: No available actions - returning null");
     return null;
   }
 
-  // For non-admin users, show status action + delete separately
+  // For non-admin users (estimator, inspector, mitigation-tech)
   if (userRole !== "admin" && userRole !== "super-admin") {
     return (
       <div className="mt-4">
@@ -221,44 +201,43 @@ export function ProjectActions({
 
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg max-w-sm w-full">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Confirm Delete
+                Delete Project?
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Are you sure you want to delete this project? This action cannot
-                be undone.
+              <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+                This action cannot be undone.
               </p>
-              <div className="flex justify-end space-x-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                  className="px-3 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={deleteProject}
                   disabled={loading}
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 text-sm"
                 >
-                  {loading ? "Deleting..." : "Delete Project"}
+                  {loading ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Action Buttons for non-admin users */}
-        <div className="flex justify-end space-x-3">
+        {/* Compact Action Buttons for non-admin users */}
+        <div className="flex flex-wrap gap-2 justify-end">
           {/* Status Action Button */}
           {hasStatusActions && (
             <button
               onClick={() => updateStatus(statusActions[0].status)}
               disabled={loading}
-              className={`px-6 py-2 rounded-md font-medium transition-colors disabled:opacity-50 ${statusActions[0].buttonStyle}`}
+              className={`px-3 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 whitespace-nowrap min-w-[120px] ${statusActions[0].buttonStyle}`}
             >
-              {loading ? "Processing..." : statusActions[0].label}
+              {loading ? "..." : statusActions[0].label}
             </button>
           )}
 
@@ -267,9 +246,9 @@ export function ProjectActions({
             <button
               onClick={() => setShowDeleteConfirm(true)}
               disabled={loading}
-              className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 font-medium"
+              className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 font-medium text-sm whitespace-nowrap min-w-[80px]"
             >
-              Delete Project
+              Delete
             </button>
           )}
         </div>
@@ -277,8 +256,7 @@ export function ProjectActions({
     );
   }
 
-  // ADMIN VIEW: Dropdown with all options
-  // For admin, combine status actions and delete action for the dropdown
+  // ADMIN VIEW
   const adminActions = [
     ...statusActions,
     ...(deleteAction ? [deleteAction] : []),
@@ -294,28 +272,27 @@ export function ProjectActions({
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg max-w-sm w-full">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Confirm Delete
+              Delete Project?
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Are you sure you want to delete this project? This action cannot
-              be undone.
+            <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+              This action cannot be undone.
             </p>
-            <div className="flex justify-end space-x-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="px-3 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={deleteProject}
                 disabled={loading}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 text-sm"
               >
-                {loading ? "Deleting..." : "Delete Project"}
+                {loading ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>
@@ -328,11 +305,11 @@ export function ProjectActions({
           <button
             onClick={() => setShowAdminDropdown(!showAdminDropdown)}
             disabled={loading}
-            className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors disabled:opacity-50 font-medium flex items-center space-x-2"
+            className="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50 font-medium flex items-center space-x-2 text-sm whitespace-nowrap"
           >
-            <span>Project Actions</span>
+            <span>Actions</span>
             <svg
-              className={`w-4 h-4 transition-transform ${
+              className={`w-3 h-3 transition-transform ${
                 showAdminDropdown ? "rotate-180" : ""
               }`}
               fill="none"
@@ -350,18 +327,18 @@ export function ProjectActions({
 
           {/* Dropdown Menu */}
           {showAdminDropdown && (
-            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
-              <div className="py-1">
+            <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+              <div className="py-1 max-h-48 overflow-y-auto">
                 {adminActions.map((action, index) => (
                   <button
                     key={index}
                     onClick={() => updateStatus(action.status)}
                     disabled={loading}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                    className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                   >
                     <div className="font-medium">{action.label}</div>
                     {action.description && (
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                         {action.description}
                       </div>
                     )}
