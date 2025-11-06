@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface ILineItem extends Document {
   name: string;
+  itemCode?: string;
   unit: string;
   quantity: number;
   notes?: string;
@@ -33,6 +34,11 @@ const LineItemSchema: Schema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
+    },
+    itemCode: {
+      // ← ADD THIS SECTION
+      type: String,
       trim: true,
     },
     unit: {

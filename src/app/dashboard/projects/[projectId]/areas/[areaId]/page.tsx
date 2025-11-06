@@ -384,6 +384,7 @@ export default async function AreaDetailPage({
                             {item.name}
                           </h3>
                           <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            <span>Item Code: {item.itemCode}</span>
                             <span>Qty: {item.quantity}</span>
                             <span>Unit: {item.unit}</span>
                             {/* ADD COST DISPLAY */}

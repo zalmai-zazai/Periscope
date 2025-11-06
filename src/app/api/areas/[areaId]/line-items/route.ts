@@ -18,7 +18,7 @@ export async function POST(
 
     await dbConnect();
 
-    const { name, unit, quantity, notes, iicrcReference } =
+    const { name, itemCode, unit, quantity, notes, iicrcReference } =
       await request.json();
 
     if (!name || !unit) {
@@ -43,6 +43,7 @@ export async function POST(
     // Create line item
     const lineItem = new LineItem({
       name,
+      itemCode,
       unit,
       quantity: quantity || 1,
       notes,

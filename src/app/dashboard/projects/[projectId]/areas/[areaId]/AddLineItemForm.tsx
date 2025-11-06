@@ -30,6 +30,7 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
 
   const [formData, setFormData] = useState({
     name: "",
+    itemCode: "",
     unit: "each",
     quantity: 1,
     notes: "",
@@ -106,6 +107,7 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
   const handleCatalogSelect = (item: CatalogItem) => {
     setFormData({
       name: item.description,
+      itemCode: item.code,
       unit: item.unit,
       quantity: 1,
       notes: item.defaultNotes || "",
@@ -135,6 +137,7 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
       if (result.success) {
         setFormData({
           name: "",
+          itemCode: "",
           unit: "each",
           quantity: 1,
           notes: "",
@@ -259,7 +262,23 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
             </button>
           </div>
         </div>
-
+        <div>
+          <label
+            htmlFor="itemCode"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
+            Item Code
+          </label>
+          <input
+            type="text"
+            id="itemCode"
+            name="itemCode"
+            value={formData.itemCode}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+            placeholder="e.g., DRYWALL-001, CARPET-RM"
+          />
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label

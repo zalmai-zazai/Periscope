@@ -494,13 +494,16 @@ export function InsuranceClaimPDF({ reportData }: InsuranceClaimPDFProps) {
                   <View style={styles.lineItemsTable}>
                     {/* Table Header - EXPANDED WIDTHS */}
                     <View style={[styles.tableRow, styles.tableColHeader]}>
+                      <View style={[styles.tableCol, { width: "12%" }]}>
+                        <Text style={styles.tableCell}>Item Code</Text>
+                      </View>
                       <View style={[styles.tableCol, { width: "45%" }]}>
                         <Text style={styles.tableCell}>Item Description</Text>
                       </View>
-                      <View style={[styles.tableCol, { width: "12%" }]}>
+                      <View style={[styles.tableCol, { width: "10%" }]}>
                         <Text style={styles.tableCell}>Qty</Text>
                       </View>
-                      <View style={[styles.tableCol, { width: "18%" }]}>
+                      <View style={[styles.tableCol, { width: "12%" }]}>
                         <Text style={styles.tableCell}>Unit</Text>
                       </View>
                       {/* Commented out for now
@@ -511,7 +514,7 @@ export function InsuranceClaimPDF({ reportData }: InsuranceClaimPDFProps) {
                         <Text style={styles.tableCell}>Total</Text>
                       </View>
                       */}
-                      <View style={[styles.tableCol, { width: "25%" }]}>
+                      <View style={[styles.tableCol, { width: "21%" }]}>
                         <Text style={styles.tableCell}>IICRC Reference</Text>
                       </View>
                     </View>
@@ -519,6 +522,9 @@ export function InsuranceClaimPDF({ reportData }: InsuranceClaimPDFProps) {
                     {/* Table Rows */}
                     {area.lineItems.map((item: any, itemIndex: number) => (
                       <View key={itemIndex} style={styles.tableRow}>
+                        <View style={[styles.tableCol, { width: "12%" }]}>
+                          <Text style={styles.tableCell}>{item.itemCode}</Text>
+                        </View>
                         <View style={[styles.tableCol, { width: "45%" }]}>
                           <Text style={styles.tableCell}>{item.name}</Text>
                           {item.notes && (
@@ -527,10 +533,10 @@ export function InsuranceClaimPDF({ reportData }: InsuranceClaimPDFProps) {
                             </Text>
                           )}
                         </View>
-                        <View style={[styles.tableCol, { width: "12%" }]}>
+                        <View style={[styles.tableCol, { width: "10%" }]}>
                           <Text style={styles.tableCell}>{item.quantity}</Text>
                         </View>
-                        <View style={[styles.tableCol, { width: "18%" }]}>
+                        <View style={[styles.tableCol, { width: "12%" }]}>
                           <Text style={styles.tableCell}>{item.unit}</Text>
                         </View>
                         {/* Commented out for now
@@ -549,7 +555,7 @@ export function InsuranceClaimPDF({ reportData }: InsuranceClaimPDFProps) {
                           </Text>
                         </View>
                         */}
-                        <View style={[styles.tableCol, { width: "25%" }]}>
+                        <View style={[styles.tableCol, { width: "21%" }]}>
                           <Text style={styles.tableCell}>
                             {item.iicrcReference || "N/A"}
                           </Text>
