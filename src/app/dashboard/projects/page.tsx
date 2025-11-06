@@ -7,6 +7,7 @@ import Company from "@/models/Company";
 import Link from "next/link";
 import { LogoutButton } from "@/components/LogoutButton";
 import { ProjectFilters } from "@/components/ProjectFilters";
+import Navbar from "@/components/Navbar";
 
 export default async function ProjectsPage({
   searchParams,
@@ -25,7 +26,7 @@ export default async function ProjectsPage({
   const params = await searchParams;
   const statusFilter = params?.status;
   const searchFilter = params?.search;
-
+  const isAdmin = session.user?.role === "admin";
   // Check if user can create projects
   const company = await Company.findOne({ _id: session.user.companyId });
   const canCreateProjects =
@@ -157,21 +158,7 @@ export default async function ProjectsPage({
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Projects
-            </h1>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600 dark:text-gray-300">
-                {session.user?.name}
-              </span>
-              <LogoutButton />
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar isAdmin={isAdmin} session={session} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">

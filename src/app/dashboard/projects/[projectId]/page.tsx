@@ -14,6 +14,7 @@ import Company from "@/models/Company";
 import { ProjectSkitchUpload } from "@/components/ProjectSkitchUpload";
 import { ProjectSkitchDisplay } from "@/components/ProjectSkitchDisplay";
 import mongoose from "mongoose";
+import Navbar from "@/components/Navbar";
 type Lean<T> = Omit<T, keyof mongoose.Document> & { _id: string };
 export default async function ProjectDetailPage({
   params,
@@ -27,7 +28,7 @@ export default async function ProjectDetailPage({
   }
 
   await dbConnect();
-
+  const isAdmin = session.user?.role === "admin";
   // Get project with areas AND all assignee info
   let project: Lean<
     IProject & {
@@ -250,21 +251,7 @@ export default async function ProjectDetailPage({
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Project Details
-            </h1>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600 dark:text-gray-300">
-                {session.user?.name}
-              </span>
-              <LogoutButton />
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar isAdmin={isAdmin} session={session} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
