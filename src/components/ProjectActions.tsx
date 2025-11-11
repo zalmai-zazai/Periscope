@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ConfirmationModal } from "./ConfirmationModal";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
+import { useToast } from "@/hooks/useToast";
 
 interface ProjectActionsProps {
   projectId: string;
@@ -21,9 +22,9 @@ export function ProjectActions({
 }: ProjectActionsProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+  const toast = useToast();
 
   const canDeleteProject = () => {
     if (userRole === "admin" || userRole === "super-admin") return true;
@@ -40,19 +41,29 @@ export function ProjectActions({
 
   const deleteProject = async () => {
     setLoading(true);
-    setError("");
+
+    const loadingToast = toast.loading("Deleting project...");
+
     try {
       const response = await fetch(`/api/projects/${projectId}`, {
         method: "DELETE",
       });
       const result = await response.json();
+
       if (result.success) {
+        toast.dismiss(loadingToast);
+        toast.success("Project deleted successfully");
         router.push("/dashboard/projects");
       } else {
-        setError(result.error || "Failed to delete project");
+        toast.dismiss(loadingToast);
+        toast.error(
+          "Failed to delete project",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
-      setError("Something went wrong");
+      toast.dismiss(loadingToast);
+      toast.error("Something went wrong", "Please try again later");
     } finally {
       setLoading(false);
       setShowDeleteConfirm(false);
@@ -158,8 +169,9 @@ export function ProjectActions({
     }
 
     setLoading(true);
-    setError("");
     setShowAdminDropdown(false);
+
+    const loadingToast = toast.loading("Updating project status...");
 
     try {
       const response = await fetch(`/api/projects/${projectId}/status`, {
@@ -171,13 +183,21 @@ export function ProjectActions({
       });
 
       const result = await response.json();
+
       if (result.success) {
+        toast.dismiss(loadingToast);
+        toast.success("Status updated successfully");
         router.refresh();
       } else {
-        setError(result.error || "Failed to update status");
+        toast.dismiss(loadingToast);
+        toast.error(
+          "Failed to update status",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
-      setError("Something went wrong");
+      toast.dismiss(loadingToast);
+      toast.error("Something went wrong", "Please try again later");
     } finally {
       setLoading(false);
     }
@@ -194,13 +214,7 @@ export function ProjectActions({
   if (userRole !== "admin" && userRole !== "super-admin") {
     return (
       <div className="mt-4">
-        {error && (
-          <div className="p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-md text-sm mb-3">
-            {error}
-          </div>
-        )}
-
-        {/* Delete Confirmation Modal */}
+        {/* Confirmation Modal for Delete */}
         <ConfirmationModal
           isOpen={showDeleteConfirm}
           onClose={() => setShowDeleteConfirm(false)}
@@ -248,40 +262,17 @@ export function ProjectActions({
 
   return (
     <div className="mt-4">
-      {error && (
-        <div className="p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-md text-sm mb-3">
-          {error}
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg max-w-sm w-full">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              Delete Project?
-            </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
-              This action cannot be undone.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="px-3 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={deleteProject}
-                disabled={loading}
-                className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 text-sm"
-              >
-                {loading ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Confirmation Modal for Delete */}
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={deleteProject}
+        title="Delete Project?"
+        message="This action cannot be undone. All areas, line items, and photos will be permanently removed."
+        confirmText={loading ? "Deleting..." : "Delete"}
+        variant="danger"
+        isLoading={loading}
+      />
 
       {/* Admin Dropdown */}
       <div className="flex justify-end">

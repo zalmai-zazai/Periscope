@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/hooks/useToast";
 
 interface AreaPhotoUploadProps {
   areaId: string;
@@ -9,6 +10,7 @@ interface AreaPhotoUploadProps {
 export function AreaPhotoUpload({ areaId }: AreaPhotoUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const toast = useToast();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("1️⃣ File upload started");
@@ -17,6 +19,9 @@ export function AreaPhotoUpload({ areaId }: AreaPhotoUploadProps) {
 
     setUploading(true);
     setError("");
+
+    // Show loading toast
+    const loadingToast = toast.loading("Uploading photo...");
 
     try {
       const formData = new FormData();
@@ -36,15 +41,24 @@ export function AreaPhotoUpload({ areaId }: AreaPhotoUploadProps) {
 
       if (result.success) {
         console.log("✅ Upload successful in frontend");
+        toast.dismiss(loadingToast);
+        toast.success("Photo uploaded successfully");
         window.location.reload();
         e.target.value = "";
       } else {
         console.log("❌ Upload failed:", result.error);
         setError(result.error || "Upload failed");
+        toast.dismiss(loadingToast);
+        toast.error(
+          "Failed to upload photo",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
       console.log("💥 Network error:", error);
       setError("Failed to upload photo");
+      toast.dismiss(loadingToast);
+      toast.error("Failed to upload photo", "Please try again later");
     } finally {
       setUploading(false);
     }

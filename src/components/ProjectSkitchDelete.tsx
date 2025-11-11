@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
+import { useToast } from "@/hooks/useToast";
 
 interface ProjectSkitchDeleteProps {
   photoUrl: string;
@@ -18,13 +20,13 @@ export function ProjectSkitchDelete({
   onImageClick,
 }: ProjectSkitchDeleteProps) {
   const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const toast = useToast();
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this skitch photo?")) {
-      return;
-    }
-
     setDeleting(true);
+
+    const loadingToast = toast.loading("Deleting skitch photo...");
 
     try {
       console.log("🔄 Deleting skitch photo with publicId:", publicId);
@@ -47,15 +49,23 @@ export function ProjectSkitchDelete({
       console.log("📡 Delete response data:", result);
 
       if (result.success) {
+        toast.dismiss(loadingToast);
+        toast.success("Skitch photo deleted successfully");
         onSkitchPhotoDeleted();
       } else {
-        alert(result.error || "Failed to delete skitch photo");
+        toast.dismiss(loadingToast);
+        toast.error(
+          "Failed to delete skitch photo",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
       console.error("💥 Delete error:", error);
-      alert("Failed to delete skitch photo");
+      toast.dismiss(loadingToast);
+      toast.error("Failed to delete skitch photo", "Please try again later");
     } finally {
       setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -65,25 +75,44 @@ export function ProjectSkitchDelete({
     }
   };
 
+  const openDeleteConfirm = () => {
+    setShowDeleteConfirm(true);
+  };
+
   return (
-    <div className="relative group">
-      <img
-        src={photoUrl}
-        alt="Skitch photo"
-        className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity border-2 border-purple-200 dark:border-purple-800"
-        onClick={handleImageClick}
+    <>
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete Skitch Photo?"
+        message="This action cannot be undone. The annotated photo will be permanently removed."
+        confirmText={deleting ? "Deleting..." : "Delete"}
+        variant="danger"
+        isLoading={deleting}
       />
-      {/* Remove opacity-0 group-hover:opacity-100 to always show the button */}
-      <button
-        onClick={handleDelete}
-        disabled={deleting}
-        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full transition-opacity disabled:opacity-50 text-xs w-6 h-6 flex items-center justify-center"
-      >
-        {deleting ? "..." : "×"}
-      </button>
-      <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
-        Skitch
+
+      <div className="relative group">
+        <img
+          src={photoUrl}
+          alt="Skitch photo"
+          className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity border-2 border-purple-200 dark:border-purple-800"
+          onClick={handleImageClick}
+        />
+        {/* Delete Button - Always visible */}
+        <button
+          onClick={openDeleteConfirm}
+          disabled={deleting}
+          className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full transition-opacity disabled:opacity-50 text-xs w-6 h-6 flex items-center justify-center hover:bg-red-700"
+          title="Delete skitch photo"
+        >
+          {deleting ? "..." : "×"}
+        </button>
+        <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+          Skitch
+        </div>
       </div>
-    </div>
+    </>
   );
 }

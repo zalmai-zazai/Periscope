@@ -1,7 +1,8 @@
-// components/AreaPhotoDelete.tsx
 "use client";
 
 import { useState } from "react";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
+import { useToast } from "@/hooks/useToast";
 
 interface AreaPhotoDeleteProps {
   photoUrl: string;
@@ -19,13 +20,13 @@ export function AreaPhotoDelete({
   onImageClick,
 }: AreaPhotoDeleteProps) {
   const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const toast = useToast();
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this photo?")) {
-      return;
-    }
-
     setDeleting(true);
+
+    const loadingToast = toast.loading("Deleting photo...");
 
     try {
       const response = await fetch(`/api/areas/${areaId}/photos/${publicId}`, {
@@ -35,14 +36,22 @@ export function AreaPhotoDelete({
       const result = await response.json();
 
       if (result.success) {
+        toast.dismiss(loadingToast);
+        toast.success("Photo deleted successfully");
         onPhotoDeleted();
       } else {
-        alert(result.error || "Failed to delete photo");
+        toast.dismiss(loadingToast);
+        toast.error(
+          "Failed to delete photo",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
-      alert("Failed to delete photo");
+      toast.dismiss(loadingToast);
+      toast.error("Failed to delete photo", "Please try again later");
     } finally {
       setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -52,22 +61,41 @@ export function AreaPhotoDelete({
     }
   };
 
+  const openDeleteConfirm = () => {
+    setShowDeleteConfirm(true);
+  };
+
   return (
-    <div className="relative group">
-      <img
-        src={photoUrl}
-        alt="Area photo"
-        className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
-        onClick={handleImageClick}
+    <>
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete Photo?"
+        message="This action cannot be undone. The photo will be permanently removed from this area."
+        confirmText={deleting ? "Deleting..." : "Delete Photo"}
+        variant="danger"
+        isLoading={deleting}
       />
-      {/* Remove opacity-0 group-hover:opacity-100 to always show the button */}
-      <button
-        onClick={handleDelete}
-        disabled={deleting}
-        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full transition-opacity disabled:opacity-50 text-xs w-6 h-6 flex items-center justify-center"
-      >
-        {deleting ? "..." : "×"}
-      </button>
-    </div>
+
+      <div className="relative group">
+        <img
+          src={photoUrl}
+          alt="Area photo"
+          className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
+          onClick={handleImageClick}
+        />
+        {/* Delete Button - Always visible */}
+        <button
+          onClick={openDeleteConfirm}
+          disabled={deleting}
+          className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full transition-opacity disabled:opacity-50 text-xs w-6 h-6 flex items-center justify-center hover:bg-red-700"
+          title="Delete photo"
+        >
+          {deleting ? "..." : "×"}
+        </button>
+      </div>
+    </>
   );
 }

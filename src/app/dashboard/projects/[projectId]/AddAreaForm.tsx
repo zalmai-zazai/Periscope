@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { EquipmentEditModal } from "@/components/EquipmentEditModal";
+import { useToast } from "@/hooks/useToast";
 
 interface AddAreaFormProps {
   projectId: string;
@@ -22,6 +23,7 @@ export function AddAreaForm({ projectId }: AddAreaFormProps) {
   const [error, setError] = useState("");
   const [equipmentRecommendation, setEquipmentRecommendation] =
     useState<EquipmentCalculation | null>(null);
+  const toast = useToast();
 
   // Equipment editing state
   const [isEditingEquipment, setIsEditingEquipment] = useState(false);
@@ -246,6 +248,9 @@ export function AddAreaForm({ projectId }: AddAreaFormProps) {
       const result = await response.json();
 
       if (result.success) {
+        // Show success toast
+        toast.success("Area created successfully");
+
         // Reset form
         setFormData({
           name: "",
@@ -264,9 +269,14 @@ export function AddAreaForm({ projectId }: AddAreaFormProps) {
         router.refresh();
       } else {
         setError(result.error);
+        toast.error(
+          "Failed to create area",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
       setError("Something went wrong");
+      toast.error("Failed to create area", "Please try again later");
     } finally {
       setLoading(false);
     }
@@ -303,6 +313,7 @@ export function AddAreaForm({ projectId }: AddAreaFormProps) {
     if (!formData.length || !formData.width) return 0;
     return parseFloat(formData.length) * parseFloat(formData.width);
   };
+
   // Initialize manual equipment when calculation changes
   useEffect(() => {
     if (
@@ -326,6 +337,7 @@ export function AddAreaForm({ projectId }: AddAreaFormProps) {
   }) => {
     setManualEquipment(newEquipment);
     setIsManualOverride(true);
+    toast.success("Equipment updated manually");
   };
 
   const handleUseCalculatedEquipment = () => {
@@ -341,6 +353,7 @@ export function AddAreaForm({ projectId }: AddAreaFormProps) {
         hepaAirScrubbers: equipmentRecommendation.hepaAirScrubbers,
       });
     }
+    toast.success("Using calculated equipment values");
   };
 
   return (

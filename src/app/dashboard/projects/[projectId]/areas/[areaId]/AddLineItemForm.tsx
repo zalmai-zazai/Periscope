@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/useToast";
 
 interface AddLineItemFormProps {
   areaId: string;
@@ -27,6 +28,7 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
   const [showCatalog, setShowCatalog] = useState(false);
+  const toast = useToast();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -40,11 +42,13 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
   // AI Justification function
   const handleAIJustify = async () => {
     if (!formData.name.trim()) {
-      alert("Please enter an item name first");
+      toast.error("Please enter an item name first");
       return;
     }
 
     setAiLoading(true);
+    const loadingToast = toast.loading("Generating AI justification...");
+
     try {
       const response = await fetch("/api/ai/justify-line-item", {
         method: "POST",
@@ -60,16 +64,23 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
       const result = await response.json();
 
       if (result.success) {
+        toast.dismiss(loadingToast);
+        toast.success("AI justification generated");
         setFormData((prev) => ({
           ...prev,
           notes: result.data.notes,
           iicrcReference: result.data.iicrcReference,
         }));
       } else {
-        alert("AI justification failed: " + result.error);
+        toast.dismiss(loadingToast);
+        toast.error(
+          "AI justification failed",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
-      alert("Failed to get AI justification");
+      toast.dismiss(loadingToast);
+      toast.error("Failed to get AI justification", "Please try again later");
     } finally {
       setAiLoading(false);
     }
@@ -116,12 +127,15 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
     setSearchTerm(item.code);
     setShowCatalog(false);
     setCatalogItems([]);
+    toast.success("Catalog item selected");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const loadingToast = toast.loading("Adding line item...");
 
     try {
       const response = await fetch(`/api/areas/${areaId}/line-items`, {
@@ -135,6 +149,8 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
       const result = await response.json();
 
       if (result.success) {
+        toast.dismiss(loadingToast);
+        toast.success("Line item added successfully");
         setFormData({
           name: "",
           itemCode: "",
@@ -146,10 +162,17 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
         setSearchTerm("");
         router.refresh();
       } else {
+        toast.dismiss(loadingToast);
         setError(result.error);
+        toast.error(
+          "Failed to add line item",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
+      toast.dismiss(loadingToast);
       setError("Something went wrong");
+      toast.error("Failed to add line item", "Please try again later");
     } finally {
       setLoading(false);
     }

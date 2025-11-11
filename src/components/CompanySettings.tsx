@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/hooks/useToast";
 
 interface Company {
   _id: string;
@@ -8,23 +9,44 @@ interface Company {
   allowInspectorsCreateProjects: boolean;
   allowEstimatorsCreateProjects: boolean;
   allowEstimatorsEditSubmitted: boolean;
-  allowEstimatorsAddCosts: boolean; // ADDED THIS LINE
+  allowEstimatorsAddCosts: boolean;
 }
 
 interface CompanySettingsProps {
   initialCompany: Company;
 }
 
+// Define the toggleable settings separately
+type ToggleableSetting =
+  | "allowInspectorsCreateProjects"
+  | "allowEstimatorsCreateProjects"
+  | "allowEstimatorsEditSubmitted"
+  | "allowEstimatorsAddCosts";
+
+const settingDisplayNames: Record<ToggleableSetting, string> = {
+  allowInspectorsCreateProjects: "Inspectors Create Projects",
+  allowEstimatorsCreateProjects: "Estimators Create Projects",
+  allowEstimatorsEditSubmitted: "Estimators Edit Submitted Projects",
+  allowEstimatorsAddCosts: "Estimators Add Costs",
+};
+
 export function CompanySettings({ initialCompany }: CompanySettingsProps) {
   const [company, setCompany] = useState(initialCompany);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const toast = useToast();
 
-  const toggleSetting = async (settingName: keyof Company) => {
+  const toggleSetting = async (settingName: ToggleableSetting) => {
     if (loading) return;
 
     setLoading(true);
     setError("");
+
+    const newValue = !company[settingName];
+
+    const loadingToast = toast.loading(
+      `Updating ${settingDisplayNames[settingName]}...`
+    );
 
     try {
       const response = await fetch("/api/company/settings", {
@@ -33,7 +55,7 @@ export function CompanySettings({ initialCompany }: CompanySettingsProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          [settingName]: !company[settingName],
+          [settingName]: newValue,
         }),
       });
 
@@ -48,8 +70,20 @@ export function CompanySettings({ initialCompany }: CompanySettingsProps) {
         ...prev,
         [settingName]: result.data[settingName],
       }));
+
+      toast.dismiss(loadingToast);
+      toast.success(
+        `${settingDisplayNames[settingName]} ${
+          newValue ? "enabled" : "disabled"
+        }`,
+        `Setting has been ${newValue ? "enabled" : "disabled"} successfully`
+      );
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Something went wrong");
+      toast.dismiss(loadingToast);
+      const errorMessage =
+        error instanceof Error ? error.message : "Something went wrong";
+      setError(errorMessage);
+      toast.error("Failed to update setting", errorMessage);
     } finally {
       setLoading(false);
     }
