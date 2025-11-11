@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useToast } from "@/hooks/useToast";
 
 const CreateProjectForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const toast = useToast();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -24,6 +26,8 @@ const CreateProjectForm = () => {
     setLoading(true);
     setError("");
 
+    const loadingToast = toast.loading("Creating project...");
+
     try {
       const response = await fetch("/api/projects", {
         method: "POST",
@@ -36,12 +40,24 @@ const CreateProjectForm = () => {
       const result = await response.json();
 
       if (result.success) {
+        toast.dismiss(loadingToast);
+        toast.success(
+          "Project created successfully",
+          `${formData.name} has been created`
+        );
         router.push("/dashboard/projects");
       } else {
+        toast.dismiss(loadingToast);
         setError(result.error);
+        toast.error(
+          "Failed to create project",
+          result.error || "Please try again"
+        );
       }
     } catch (error) {
+      toast.dismiss(loadingToast);
       setError("Something went wrong");
+      toast.error("Failed to create project", "Please try again later");
     } finally {
       setLoading(false);
     }
