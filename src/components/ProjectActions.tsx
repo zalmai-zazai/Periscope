@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 interface ProjectActionsProps {
   projectId: string;
@@ -200,33 +201,16 @@ export function ProjectActions({
         )}
 
         {/* Delete Confirmation Modal */}
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg max-w-sm w-full">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Delete Project?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
-                This action cannot be undone.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-3 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={deleteProject}
-                  disabled={loading}
-                  className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 text-sm"
-                >
-                  {loading ? "Deleting..." : "Delete"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmationModal
+          isOpen={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={deleteProject}
+          title="Delete Project?"
+          message="This action cannot be undone. All areas, line items, and photos will be permanently removed."
+          confirmText={loading ? "Deleting..." : "Delete"}
+          variant="danger"
+          isLoading={loading}
+        />
 
         {/* Compact Action Buttons for non-admin users */}
         <div className="flex flex-wrap gap-2 justify-end">

@@ -8,6 +8,7 @@ export interface ICompany extends Document {
   allowInspectorsCreateProjects: boolean;
   allowEstimatorsEditSubmitted: boolean;
   allowEstimatorsCreateProjects: boolean;
+  allowEstimatorsAddCosts: boolean;
   // Subscription fields for future billing
   subscription: {
     plan: "free" | "pro" | "enterprise";
@@ -58,6 +59,11 @@ const CompanySchema: Schema = new Schema(
       default: false,
     },
     allowEstimatorsCreateProjects: {
+      type: Boolean,
+      default: false,
+    },
+
+    allowEstimatorsAddCosts: {
       type: Boolean,
       default: false,
     },

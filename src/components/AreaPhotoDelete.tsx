@@ -8,7 +8,7 @@ interface AreaPhotoDeleteProps {
   publicId: string;
   areaId: string;
   onPhotoDeleted: () => void;
-  onImageClick?: (imageUrl: string) => void; // Add this prop
+  onImageClick?: (imageUrl: string) => void;
 }
 
 export function AreaPhotoDelete({
@@ -16,7 +16,7 @@ export function AreaPhotoDelete({
   publicId,
   areaId,
   onPhotoDeleted,
-  onImageClick, // Add this prop
+  onImageClick,
 }: AreaPhotoDeleteProps) {
   const [deleting, setDeleting] = useState(false);
 
@@ -58,12 +58,13 @@ export function AreaPhotoDelete({
         src={photoUrl}
         alt="Area photo"
         className="w-full h-32 object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity"
-        onClick={handleImageClick} // Add click handler
+        onClick={handleImageClick}
       />
+      {/* Remove opacity-0 group-hover:opacity-100 to always show the button */}
       <button
         onClick={handleDelete}
         disabled={deleting}
-        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full transition-opacity disabled:opacity-50 text-xs w-6 h-6 flex items-center justify-center"
       >
         {deleting ? "..." : "×"}
       </button>

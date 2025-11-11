@@ -418,16 +418,17 @@ export default async function AreaDetailPage({
                       </div>
 
                       {/* ADD COST FORM FOR ESTIMATORS */}
-                      {session.user.role === "estimator" && (
-                        <AddCostForm
-                          areaId={areaId}
-                          lineItemId={item._id.toString()}
-                          currentQuantity={item.quantity}
-                          currentUnit={item.unit}
-                          itemName={item.name}
-                          existingUnitCost={item.unitCost}
-                        />
-                      )}
+                      {session.user.role === "estimator" &&
+                        company?.allowEstimatorsAddCosts && (
+                          <AddCostForm
+                            areaId={areaId}
+                            lineItemId={item._id.toString()}
+                            currentQuantity={item.quantity}
+                            currentUnit={item.unit}
+                            itemName={item.name}
+                            existingUnitCost={item.unitCost}
+                          />
+                        )}
                     </div>
                   ))}
                 </div>

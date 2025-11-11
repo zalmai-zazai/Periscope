@@ -26,6 +26,7 @@ export async function PATCH(request: Request) {
       "allowInspectorsCreateProjects",
       "allowEstimatorsCreateProjects",
       "allowEstimatorsEditSubmitted",
+      "allowEstimatorsAddCosts",
     ];
 
     const updateData: any = {};
@@ -61,6 +62,7 @@ export async function PATCH(request: Request) {
         allowInspectorsCreateProjects: company.allowInspectorsCreateProjects,
         allowEstimatorsCreateProjects: company.allowEstimatorsCreateProjects,
         allowEstimatorsEditSubmitted: company.allowEstimatorsEditSubmitted,
+        allowEstimatorsAddCosts: company.allowEstimatorsAddCosts,
       },
     });
   } catch (error) {

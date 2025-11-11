@@ -8,6 +8,7 @@ interface Company {
   allowInspectorsCreateProjects: boolean;
   allowEstimatorsCreateProjects: boolean;
   allowEstimatorsEditSubmitted: boolean;
+  allowEstimatorsAddCosts: boolean; // ADDED THIS LINE
 }
 
 interface CompanySettingsProps {
@@ -137,6 +138,32 @@ export function CompanySettings({ initialCompany }: CompanySettingsProps) {
             <div
               className={`absolute top-1 w-4 h-4 rounded-full transition-all ${
                 company.allowEstimatorsEditSubmitted
+                  ? "bg-green-500 left-7"
+                  : "bg-gray-500 left-1"
+              } ${loading ? "animate-pulse" : ""}`}
+            ></div>
+          </button>
+        </div>
+
+        {/* NEW: Allow Estimators to Add Costs Toggle */}
+        <div className="flex items-center justify-between">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Allow Estimators to Add Costs
+            </label>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              When enabled, estimators can add costs to line items
+            </p>
+          </div>
+
+          <button
+            onClick={() => toggleSetting("allowEstimatorsAddCosts")}
+            disabled={loading}
+            className="cursor-pointer bg-gray-200 dark:bg-gray-700 w-12 h-6 rounded-full relative focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <div
+              className={`absolute top-1 w-4 h-4 rounded-full transition-all ${
+                company.allowEstimatorsAddCosts
                   ? "bg-green-500 left-7"
                   : "bg-gray-500 left-1"
               } ${loading ? "animate-pulse" : ""}`}
