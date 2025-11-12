@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useToast } from "@/hooks/useToast";
 
 interface ProjectSkitchUploadProps {
   projectId: string;
@@ -9,6 +10,7 @@ interface ProjectSkitchUploadProps {
 export function ProjectSkitchUpload({ projectId }: ProjectSkitchUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const toast = useToast();
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("1️⃣ Skitch photo upload started");
@@ -17,6 +19,9 @@ export function ProjectSkitchUpload({ projectId }: ProjectSkitchUploadProps) {
 
     setUploading(true);
     setError("");
+
+    // Show loading toast
+    const loadingToast = toast.loading("Uploading skitch photo...");
 
     try {
       const formData = new FormData();
@@ -36,15 +41,24 @@ export function ProjectSkitchUpload({ projectId }: ProjectSkitchUploadProps) {
 
       if (result.success) {
         console.log("✅ Skitch photo upload successful in frontend");
+        toast.dismiss(loadingToast);
+        toast.success("Skitch photo uploaded successfully");
         window.location.reload();
         e.target.value = "";
       } else {
         console.log("❌ Skitch photo upload failed:", result.error);
         setError(result.error || "Upload failed");
+        toast.dismiss(loadingToast);
+        toast.error(
+          "Failed to upload skitch photo",
+          result.error || "Please try again"
+        );
       }
-    } catch (error) {
-      console.log("💥 Network error:", error);
+    } catch (err) {
+      console.log("💥 Network error:", err);
       setError("Failed to upload skitch photo");
+      toast.dismiss(loadingToast);
+      toast.error("Failed to upload skitch photo", "Please try again later");
     } finally {
       setUploading(false);
     }
