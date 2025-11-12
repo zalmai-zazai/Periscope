@@ -5,13 +5,14 @@ import dbConnect from "@/lib/mongodb";
 import Project from "@/models/Project";
 import Area from "@/models/Area";
 import LineItem from "@/models/LineItem";
+import { deleteImage } from "@/lib/cloudinary";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ projectId: string }> } // ⚠️ params is a Promise in App Router
+  { params }: { params: Promise<{ projectId: string }> }
 ) {
   try {
-    const { projectId } = await params; // ✅ await params first
+    const { projectId } = await params;
 
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -45,15 +46,103 @@ export async function DELETE(
       );
     }
 
-    // Delete all related data (areas and line items)
+    // console.log(`🗑️ Starting cleanup for project: ${projectId}`);
+
+    // GET ALL AREAS FIRST
     const areas = await Area.find({ projectId });
 
-    for (const area of areas) {
-      await LineItem.deleteMany({ areaId: area._id });
+    // DEBUG: Compare skitch vs area photo formats
+    // console.log("🔍 COMPARISON DEBUG:");
+    if (project.skitchPhotos && project.skitchPhotos.length > 0) {
+      // console.log("Skitch photo publicId:", project.skitchPhotos[0].publicId);
+    }
+    if (areas[0]?.photos?.[0]) {
+      const areaPhotoUrl = areas[0].photos[0];
+      const urlParts = areaPhotoUrl.split("/");
+      const fileName = urlParts[urlParts.length - 1];
+      const extractedPublicId = fileName.split(".")[0];
+      // console.log("Area photo URL:", areaPhotoUrl);
+      // console.log("Extracted publicId:", extractedPublicId);
     }
 
+    // 1. DELETE ALL AREA PHOTOS FROM CLOUDINARY
+    // console.log(`📸 Cleaning up ${areas.length} areas...`);
+    for (const area of areas) {
+      // Delete area photos from Cloudinary
+      if (area.photos && area.photos.length > 0) {
+        // console.log(
+        //   `🗑️ Deleting ${area.photos.length} photos from area: ${area.name}`
+        // );
+
+        for (const photoUrl of area.photos) {
+          try {
+            // Extract publicId from URL
+            const urlParts = photoUrl.split("/");
+            const fileName = urlParts[urlParts.length - 1];
+            const publicId = fileName.split(".")[0];
+
+            // console.log(`🔍 Processing area photo: ${photoUrl}`);
+            // console.log(`🔍 Extracted publicId: ${publicId}`);
+
+            // Try both with and without folder
+            const publicIdWithFolder = `damagescope/${publicId}`;
+
+            // console.log(`🔍 Trying: "${publicId}" and "${publicIdWithFolder}"`);
+
+            // Try with folder first
+            try {
+              const result = await deleteImage(publicIdWithFolder);
+              if (result.success) {
+                // console.log(`✅ Deleted with folder: ${publicIdWithFolder}`);
+              } else {
+                throw new Error("Failed with folder");
+              }
+            } catch (error) {
+              // console.log(`❌ Failed with folder, trying without...`);
+              const result = await deleteImage(publicId);
+              if (result.success) {
+                // console.log(`✅ Deleted without folder: ${publicId}`);
+              } else {
+                console.log(`❌ Both methods failed for: ${publicId}`);
+              }
+            }
+          } catch (error) {
+            console.error(`❌ Error deleting area photo: ${photoUrl}`, error);
+          }
+        }
+      }
+
+      // Delete line items for this area
+      await LineItem.deleteMany({ areaId: area._id });
+      // console.log(`✅ Deleted line items for area: ${area.name}`);
+    }
+
+    // 2. DELETE ALL SKITCH PHOTOS FROM CLOUDINARY
+    if (project.skitchPhotos && project.skitchPhotos.length > 0) {
+      // console.log(
+      //   `🗑️ Deleting ${project.skitchPhotos.length} skitch photos...`
+      // );
+      for (const skitchPhoto of project.skitchPhotos) {
+        try {
+          await deleteImage(skitchPhoto.publicId);
+          // console.log(`✅ Deleted skitch photo: ${skitchPhoto.publicId}`);
+        } catch (error) {
+          console.error(
+            `❌ Failed to delete skitch photo: ${skitchPhoto.publicId}`,
+            error
+          );
+          // Continue with other photos even if one fails
+        }
+      }
+    }
+
+    // 3. DELETE ALL DATABASE RECORDS
     await Area.deleteMany({ projectId });
     await Project.deleteOne({ _id: projectId });
+
+    // console.log(
+    //   `✅ Project ${projectId} and all related data deleted successfully`
+    // );
 
     return NextResponse.json({
       success: true,
