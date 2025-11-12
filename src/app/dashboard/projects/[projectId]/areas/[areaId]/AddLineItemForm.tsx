@@ -76,10 +76,19 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
         }));
       } else {
         toast.dismiss(loadingToast);
-        toast.error(
-          "AI justification failed",
-          result.error || "Please try again"
-        );
+
+        // Handle rate limit errors specifically
+        if (response.status === 429 || result.error === "Rate limit exceeded") {
+          toast.error(
+            "Rate Limit Exceeded",
+            result.message || "Please wait before making more AI requests"
+          );
+        } else {
+          toast.error(
+            "AI justification failed",
+            result.error || "Please try again"
+          );
+        }
       }
     } catch (error) {
       toast.dismiss(loadingToast);
@@ -131,7 +140,17 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
         setShowCustomPrompt(false);
       } else {
         toast.dismiss(loadingToast);
-        toast.error("Custom AI failed", result.error || "Please try again");
+
+        // Handle rate limit errors specifically
+        if (response.status === 429 || result.error === "Rate limit exceeded") {
+          toast.error(
+            "Rate Limit Exceeded",
+            result.message ||
+              "Please wait before making more custom AI requests"
+          );
+        } else {
+          toast.error("Custom AI failed", result.error || "Please try again");
+        }
       }
     } catch (error) {
       toast.dismiss(loadingToast);
@@ -140,7 +159,6 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
       setCustomAiLoading(false);
     }
   };
-
   // Search catalog items when search term changes
   useEffect(() => {
     const searchCatalog = async () => {

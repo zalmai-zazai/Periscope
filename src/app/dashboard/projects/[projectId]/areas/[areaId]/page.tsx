@@ -16,6 +16,7 @@ import { AreaPhotoUpload } from "@/components/AreaPhotoUpload";
 import { AreaPhotosDisplay } from "@/components/AreaPhotosDisplay";
 import Company from "@/models/Company";
 import { AddCostForm } from "@/components/AddCostForm";
+import { CollapsibleNotes } from "@/components/CollapsibleNotes";
 
 export default async function AreaDetailPage({
   params,
@@ -230,7 +231,8 @@ export default async function AreaDetailPage({
                       <p className="text-xs">
                         Based on {area.totalArea || 0} sq ft, Class{" "}
                         {area.damageClass || "2"}, Category{" "}
-                        {area.damageCategory || "2"},
+                        {area.damageCategory || "2"} {"  "},{"     "}
+                        {"  "}
                         {area.materialsAffectedPercent || 50}% materials
                         {area.containmentNeeded && ", containment needed"}
                       </p>
@@ -383,11 +385,10 @@ export default async function AreaDetailPage({
                           <h3 className="font-medium text-gray-900 dark:text-white">
                             {item.name}
                           </h3>
-                          <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                          <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
                             <span>Item Code: {item.itemCode}</span>
                             <span>Qty: {item.quantity}</span>
                             <span>Unit: {item.unit}</span>
-                            {/* ADD COST DISPLAY */}
                             {item.unitCost && (
                               <span className="text-green-600 dark:text-green-400">
                                 ${item.unitCost}/{item.unit}
@@ -399,11 +400,12 @@ export default async function AreaDetailPage({
                               </span>
                             )}
                           </div>
+
+                          {/* Collapsible Notes */}
                           {item.notes && (
-                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                              {item.notes}
-                            </p>
+                            <CollapsibleNotes notes={item.notes} />
                           )}
+
                           {item.iicrcReference && (
                             <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
                               IICRC: {item.iicrcReference}
