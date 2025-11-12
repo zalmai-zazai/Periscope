@@ -24,6 +24,9 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [customAiLoading, setCustomAiLoading] = useState(false);
+  const [showCustomPrompt, setShowCustomPrompt] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState("");
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
@@ -83,6 +86,58 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
       toast.error("Failed to get AI justification", "Please try again later");
     } finally {
       setAiLoading(false);
+    }
+  };
+
+  // AI Custom Justification function
+  const handleAICustomJustify = async () => {
+    if (!formData.name.trim()) {
+      toast.error("Please enter an item name first");
+      return;
+    }
+
+    if (!customPrompt.trim()) {
+      toast.error("Please enter a question or prompt");
+      return;
+    }
+
+    setCustomAiLoading(true);
+    const loadingToast = toast.loading("Generating custom AI response...");
+
+    try {
+      const response = await fetch("/api/ai/custom-justify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          itemName: formData.name,
+          userPrompt: customPrompt,
+          existingNotes: formData.notes, // Pass existing notes to append to
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.dismiss(loadingToast);
+        toast.success("Custom AI response generated");
+        setFormData((prev) => ({
+          ...prev,
+          notes: result.data.notes,
+          iicrcReference: result.data.iicrcReference || prev.iicrcReference,
+        }));
+        setCustomPrompt("");
+        setShowCustomPrompt(false);
+      } else {
+        toast.dismiss(loadingToast);
+        toast.error("Custom AI failed", result.error || "Please try again");
+      }
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error("Failed to get custom AI response", "Please try again later");
+    } finally {
+      setCustomAiLoading(false);
     }
   };
 
@@ -160,6 +215,8 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
           iicrcReference: "",
         });
         setSearchTerm("");
+        setCustomPrompt("");
+        setShowCustomPrompt(false);
         router.refresh();
       } else {
         toast.dismiss(loadingToast);
@@ -283,8 +340,53 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
             >
               {aiLoading ? "AI..." : "AI Justify"}
             </button>
+            <button
+              type="button"
+              onClick={() => setShowCustomPrompt(!showCustomPrompt)}
+              disabled={!formData.name.trim()}
+              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+            >
+              AI Custom
+            </button>
           </div>
+
+          {/* Custom AI Prompt Input */}
+          {/* Custom AI Prompt Input - Compact Version */}
+          {showCustomPrompt && (
+            <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-600">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Ask AI about this item:
+              </label>
+              <div className="flex gap-2">
+                <textarea
+                  value={customPrompt}
+                  onChange={(e) => setCustomPrompt(e.target.value)}
+                  placeholder="e.g., Cite IICRC for drying chamber equipment requirements, safety protocols, documentation standards..."
+                  rows={2}
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-600 dark:text-white text-sm resize-y"
+                />
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={handleAICustomJustify}
+                    disabled={customAiLoading || !customPrompt.trim()}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors disabled:opacity-50 whitespace-nowrap text-sm h-full"
+                  >
+                    {customAiLoading ? "AI..." : "Ask AI"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomPrompt(false)}
+                    className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 text-xs"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+
         <div>
           <label
             htmlFor="itemCode"
@@ -302,6 +404,7 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
             placeholder="e.g., DRYWALL-001, CARPET-RM"
           />
         </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label

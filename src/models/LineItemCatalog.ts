@@ -77,6 +77,10 @@ const LineItemCatalogSchema: Schema = new Schema(
 LineItemCatalogSchema.index({ code: 1 });
 LineItemCatalogSchema.index({ category: 1 });
 LineItemCatalogSchema.index({ description: "text" });
+LineItemCatalogSchema.index({
+  description: 1,
+  aiJustificationSource: 1,
+});
 
 export default mongoose.models.LineItemCatalog ||
   mongoose.model<ILineItemCatalog>("LineItemCatalog", LineItemCatalogSchema);
