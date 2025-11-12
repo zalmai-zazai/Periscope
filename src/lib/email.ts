@@ -1,28 +1,54 @@
 import nodemailer from "nodemailer";
+import type { Transporter } from "nodemailer";
 
-const emailServer = process.env.EMAIL_SERVER;
+const emailService = process.env.EMAIL_SERVICE;
 const emailFrom = process.env.EMAIL_FROM;
+const emailPassword = process.env.EMAIL_PASSWORD;
 
-if (!emailServer) {
-  console.warn("EMAIL_SERVER not configured - emails will not be sent");
+console.log("🔧 Email Config Debug:", {
+  emailService,
+  emailFrom,
+  hasPassword: !!emailPassword,
+  passwordLength: emailPassword?.length,
+});
+
+// Create transporter with proper typing
+let transporter: Transporter | null = null;
+
+if (emailService === "gmail" && emailFrom && emailPassword) {
+  console.log("✅ Configuring Gmail transporter...");
+  transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: emailFrom,
+      pass: emailPassword,
+    },
+  });
+} else {
+  console.warn("❌ Gmail not configured - emails will not be sent");
 }
 
-// Create transporter
+interface EmailResult {
+  success: boolean;
+  messageId?: string;
+  message?: string;
+  error?: unknown;
+}
 
-const transporter = emailServer
-  ? nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      auth: {
-        user: process.env.EMAIL_FROM, // Use env variable
-        pass: process.env.EMAIL_PASSWORD, // Use env variable
-      },
-    })
-  : null;
+export async function sendEmail(
+  to: string,
+  subject: string,
+  html: string
+): Promise<EmailResult> {
+  // ✅ KEEP THIS - Always log to terminal for development
+  console.log("📧 [TERMINAL] Reset code would be sent to:", to);
+  console.log("📧 [TERMINAL] Email subject:", subject);
+  console.log("📧 [TERMINAL] Email content:", html);
 
-export async function sendEmail(to: string, subject: string, html: string) {
   if (!transporter || !emailFrom) {
-    console.log("📧 Email not sent (no configuration):", { to, subject });
+    console.log(
+      "📧 Email not sent (no configuration) - but code is logged above"
+    );
     return { success: false, message: "Email not configured" };
   }
 
@@ -34,16 +60,16 @@ export async function sendEmail(to: string, subject: string, html: string) {
       html,
     });
 
-    console.log("📧 Email sent:", info.messageId);
+    console.log("📧 ✅ Real email sent:", info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error("❌ Email send error:", error);
+    console.error("❌ Real email send error:", error);
     return { success: false, error };
   }
 }
 
-// Test email configuration (optional)
-export async function testEmailConfig() {
+// Test email configuration
+export async function testEmailConfig(): Promise<boolean> {
   if (!transporter) {
     console.log("❌ Email transporter not configured");
     return false;
