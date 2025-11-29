@@ -44,7 +44,7 @@ export function ProjectSkitchDisplay({
       {skitchPhotos.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Skitch Photos ({skitchPhotos.length})
+            Sketch Photos ({skitchPhotos.length})
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {skitchPhotos.map((photo) => (

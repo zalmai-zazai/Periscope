@@ -67,7 +67,7 @@ export function ProjectSkitchUpload({ projectId }: ProjectSkitchUploadProps) {
   return (
     <div className="mb-6">
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Upload Skitch Photos
+        Upload Sketch Photos
       </label>
       <div className="flex items-center space-x-4">
         <label className="flex-1">

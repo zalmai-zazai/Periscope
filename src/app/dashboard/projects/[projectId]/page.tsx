@@ -385,7 +385,7 @@ export default async function ProjectDetailPage({
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Skitch Photos
+              Sketch Photos
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Annotated photos, diagrams, and marked-up images for the entire
