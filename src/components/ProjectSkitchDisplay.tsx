@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { ImagePreviewModal } from "./ImagePreviewModal";
 import { ProjectSkitchDelete } from "./ProjectSkitchDelete";
+import { SketchAnalyzer } from "./SketchAnalyzer";
 
 interface ProjectSkitchDisplayProps {
   projectId: string;
@@ -48,16 +49,22 @@ export function ProjectSkitchDisplay({
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {skitchPhotos.map((photo) => (
-              <ProjectSkitchDelete
-                key={photo.publicId}
-                photoUrl={photo.url}
-                publicId={photo.publicId}
-                projectId={projectId}
-                onSkitchPhotoDeleted={() =>
-                  handleSkitchPhotoDeleted(photo.publicId)
-                }
-                onImageClick={handleImageClick}
-              />
+              // Wrap each photo + analyzer in a container div
+              <div key={photo.publicId} className="space-y-3">
+                {/* Existing Delete Component - UNCHANGED */}
+                <ProjectSkitchDelete
+                  photoUrl={photo.url}
+                  publicId={photo.publicId}
+                  projectId={projectId}
+                  onSkitchPhotoDeleted={() =>
+                    handleSkitchPhotoDeleted(photo.publicId)
+                  }
+                  onImageClick={handleImageClick}
+                />
+
+                {/* NEW: AI Analyzer Component - Added Below */}
+                <SketchAnalyzer photoUrl={photo.url} projectId={projectId} />
+              </div>
             ))}
           </div>
         </div>

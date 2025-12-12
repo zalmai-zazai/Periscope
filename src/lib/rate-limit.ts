@@ -86,8 +86,14 @@ export const rateLimitConfig = {
     requests: 5, // 5 requests
     windowMs: 60000, // per minute
   },
+  // NEW: AI Sketch Analysis - similar to justify
+  aiAnalyze: {
+    requests: 8, // 8 requests per minute (adjust as needed)
+    windowMs: 60000, // per minute
+  },
 };
 
 // Create rate limiters
 export const aiJustifyLimiter = new RateLimiter(rateLimitConfig.aiJustify);
 export const aiCustomLimiter = new RateLimiter(rateLimitConfig.aiCustom);
+export const aiAnalyzeLimiter = new RateLimiter(rateLimitConfig.aiAnalyze); // NEW LINE
