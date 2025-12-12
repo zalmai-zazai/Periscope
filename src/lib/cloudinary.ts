@@ -15,7 +15,7 @@ export async function uploadImage(imageFile: File) {
   try {
     console.log("☁️ Uploading to Cloudinary...");
     const result = await cloudinary.uploader.upload(base64Image, {
-      folder: "damagescope",
+      folder: "PeriScope",
       resource_type: "image",
     });
 

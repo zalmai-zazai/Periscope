@@ -63,7 +63,7 @@ export function ProjectSkitchDisplay({
                 />
 
                 {/* NEW: AI Analyzer Component - Added Below */}
-                <SketchAnalyzer photoUrl={photo.url} projectId={projectId} />
+                {/* <SketchAnalyzer photoUrl={photo.url} projectId={projectId} /> */}
               </div>
             ))}
           </div>
