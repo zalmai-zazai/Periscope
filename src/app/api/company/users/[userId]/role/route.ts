@@ -23,7 +23,7 @@ export async function PATCH(
 
     await dbConnect();
 
-    const { userId } = params;
+    const { userId } = await params;
     const { role } = await request.json();
 
     // Validate role
