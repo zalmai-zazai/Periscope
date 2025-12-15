@@ -56,7 +56,7 @@ const CompanySchema: Schema = new Schema(
     },
     allowEstimatorsEditSubmitted: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     allowEstimatorsCreateProjects: {
       type: Boolean,

@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/useToast";
 
 interface AddAreaFormProps {
   projectId: string;
+  onSuccess?: () => void;
 }
 
 interface EquipmentCalculation {
@@ -17,7 +18,7 @@ interface EquipmentCalculation {
   error?: string;
 }
 
-export function AddAreaForm({ projectId }: AddAreaFormProps) {
+export function AddAreaForm({ projectId, onSuccess }: AddAreaFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -250,6 +251,7 @@ export function AddAreaForm({ projectId }: AddAreaFormProps) {
       if (result.success) {
         // Show success toast
         toast.success("Area created successfully");
+        onSuccess?.(); // THIS CLOSES THE MODAL
 
         // Reset form
         setFormData({

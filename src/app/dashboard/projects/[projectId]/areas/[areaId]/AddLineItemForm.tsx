@@ -8,6 +8,7 @@ interface AddLineItemFormProps {
   areaId: string;
   projectId: string;
   userRole?: string;
+  onSuccess?: () => void;
 }
 
 interface CatalogItem {
@@ -20,7 +21,11 @@ interface CatalogItem {
   defaultNotes?: string;
 }
 
-export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
+export function AddLineItemForm({
+  areaId,
+  projectId,
+  onSuccess,
+}: AddLineItemFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
@@ -224,6 +229,7 @@ export function AddLineItemForm({ areaId, projectId }: AddLineItemFormProps) {
       if (result.success) {
         toast.dismiss(loadingToast);
         toast.success("Line item added successfully");
+        onSuccess?.(); // ✅ CLOSE MODAL
         setFormData({
           name: "",
           itemCode: "",

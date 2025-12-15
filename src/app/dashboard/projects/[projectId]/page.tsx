@@ -15,6 +15,7 @@ import { ProjectSkitchUpload } from "@/components/ProjectSkitchUpload";
 import { ProjectSkitchDisplay } from "@/components/ProjectSkitchDisplay";
 import mongoose from "mongoose";
 import Navbar from "@/components/Navbar";
+import { AddAreaModal } from "@/components/AddAreaModal";
 type Lean<T> = Omit<T, keyof mongoose.Document> & { _id: string };
 export default async function ProjectDetailPage({
   params,
@@ -403,47 +404,27 @@ export default async function ProjectDetailPage({
             initialSkitchPhotos={safeSkitchPhotos}
           />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
           {/* Areas Section */}
           <div className="lg:col-span-2">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Areas ({areas.length})
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Rooms and locations with damage
-                </p>
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-start gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Areas ({areas.length})
+                  </h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Rooms and locations with damage
+                  </p>
+                </div>
 
-                {/* STATUS MESSAGES FOR NEW WORKFLOW */}
-                {project.status === "estimating" && (
-                  <div className="mt-2 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-md">
-                    <p className="text-sm text-indigo-700 dark:text-indigo-300">
-                      📊 <strong>Estimation in Progress</strong> - Adding new
-                      areas/items may be restricted.
-                    </p>
-                  </div>
-                )}
-                {project.status === "needs_field_review" && (
-                  <div className="mt-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-md">
-                    <p className="text-sm text-orange-700 dark:text-orange-300">
-                      🔍 <strong>Awaiting Field Review</strong> - Project is
-                      ready for mitigation tech assignment.
-                    </p>
-                  </div>
-                )}
-                {project.status === "field_in_progress" && (
-                  <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
-                      🛠️ <strong>Field Work in Progress</strong> - Mitigation
-                      tech is currently working on site.
-                    </p>
-                  </div>
+                {canShowAddAreaForm && (
+                  <AddAreaModal projectId={project._id.toString()} />
                 )}
               </div>
 
               {areas.length === 0 ? (
-                <div className="p-8 text-center">
+                <div className="p-12 text-center">
                   <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-gray-400 text-2xl">🏠</span>
                   </div>
@@ -457,15 +438,16 @@ export default async function ProjectDetailPage({
                   </p>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {areas.map((area) => (
                     <div
                       key={String(area._id)}
-                      className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800 hover:shadow-md transition"
                     >
-                      <div className="flex justify-between items-start">
+                      {/* Header */}
+                      <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h3 className="font-medium text-gray-900 dark:text-white">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                             {area.name}
                           </h3>
                           {area.description && (
@@ -474,28 +456,62 @@ export default async function ProjectDetailPage({
                             </p>
                           )}
                         </div>
+
                         <Link
                           href={`/dashboard/projects/${project._id}/areas/${area._id}`}
-                          className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                          className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                         >
-                          {project.status === "estimating"
-                            ? "View & Add Costs"
-                            : "View Details"}
+                          Edit
                         </Link>
                       </div>
+
+                      {/* Area details */}
+                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+                        <div>
+                          <span className="text-gray-500">Size</span>
+                          <p className="font-medium">
+                            {area.length} × {area.width} {area.unit}
+                          </p>
+                        </div>
+
+                        <div>
+                          <span className="text-gray-500">Class</span>
+                          <p className="font-medium">
+                            {area.damageClass} / {area.damageCategory}
+                          </p>
+                        </div>
+
+                        <div>
+                          <span className="text-gray-500">
+                            Materials Affected
+                          </span>
+                          <p className="font-medium">
+                            {area.materialsAffectedPercent}%
+                          </p>
+                        </div>
+
+                        <div>
+                          <span className="text-gray-500">Containment</span>
+                          <p className="font-medium">
+                            {area.containmentNeeded ? "Yes" : "No"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Equipment */}
+                      {area.recommendedEquipment && (
+                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md text-sm text-blue-800 dark:text-blue-200">
+                          🌀 {area.recommendedEquipment.airMovers} Air Movers •{" "}
+                          {area.recommendedEquipment.lgrDehumidifiers} Dehus •{" "}
+                          {area.recommendedEquipment.hepaAirScrubbers} HEPA
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
             </div>
           </div>
-
-          {/* Add Area Section (Conditional) */}
-          {canShowAddAreaForm && (
-            <div>
-              <AddAreaForm projectId={project._id.toString()} />
-            </div>
-          )}
         </div>
       </main>
     </div>

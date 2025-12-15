@@ -17,6 +17,7 @@ import { AreaPhotosDisplay } from "@/components/AreaPhotosDisplay";
 import Company from "@/models/Company";
 import { AddCostForm } from "@/components/AddCostForm";
 import { CollapsibleNotes } from "@/components/CollapsibleNotes";
+import { LineItemsSection } from "./LineItemsSection";
 
 export default async function AreaDetailPage({
   params,
@@ -68,6 +69,15 @@ export default async function AreaDetailPage({
     session.user.role === "estimator" && company?.allowEstimatorsEditSubmitted;
   const canShowAddItemForm =
     session.user.role !== "estimator" || canEstimatorAddItems;
+  const lineItemsData = lineItems.map((item) => ({
+    ...item,
+    _id: item._id.toString(),
+    areaId: item.areaId.toString(),
+    projectId: item.projectId.toString(),
+    companyId: item.companyId.toString(),
+    createdAt: item.createdAt.toISOString(),
+    updatedAt: item.updatedAt.toISOString(),
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -335,7 +345,7 @@ export default async function AreaDetailPage({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
           {/* Left Column - Photos and Line Items */}
           <div className="lg:col-span-2 space-y-6">
             {/* Photo Upload and Display Section */}
@@ -351,103 +361,27 @@ export default async function AreaDetailPage({
             </div>
 
             {/* Line Items Section */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Damage Items ({lineItems.length})
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Specific damage found in this area
-                </p>
-              </div>
-
-              {lineItems.length === 0 ? (
-                <div className="p-8 text-center">
-                  <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-gray-400 text-2xl">📝</span>
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    No damage items yet
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Add the first damage item to document specific damage
-                  </p>
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {lineItems.map((item) => (
-                    <div
-                      key={item._id.toString()}
-                      className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-900 dark:text-white">
-                            {item.name}
-                          </h3>
-                          <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                            <span>Item Code: {item.itemCode}</span>
-                            <span>Qty: {item.quantity}</span>
-                            <span>Unit: {item.unit}</span>
-                            {item.unitCost && (
-                              <span className="text-green-600 dark:text-green-400">
-                                ${item.unitCost}/{item.unit}
-                              </span>
-                            )}
-                            {item.totalCost && (
-                              <span className="font-semibold text-green-700 dark:text-green-300">
-                                Total: ${item.totalCost}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Collapsible Notes */}
-                          {item.notes && (
-                            <CollapsibleNotes notes={item.notes} />
-                          )}
-
-                          {item.iicrcReference && (
-                            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                              IICRC: {item.iicrcReference}
-                            </p>
-                          )}
-                        </div>
-                        <LineItemActions
-                          lineItemId={item._id.toString()}
-                          areaId={areaId}
-                          photosCount={item.photos.length}
-                        />
-                      </div>
-
-                      {/* ADD COST FORM FOR ESTIMATORS */}
-                      {session.user.role === "estimator" &&
-                        company?.allowEstimatorsAddCosts && (
-                          <AddCostForm
-                            areaId={areaId}
-                            lineItemId={item._id.toString()}
-                            currentQuantity={item.quantity}
-                            currentUnit={item.unit}
-                            itemName={item.name}
-                            existingUnitCost={item.unitCost}
-                          />
-                        )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Right Column - Add Line Item Section (Conditional) */}
-          {canShowAddItemForm && (
-            <div>
-              <AddLineItemForm
+            {canShowAddItemForm && (
+              <LineItemsSection
+                lineItems={lineItemsData}
                 areaId={area._id.toString()}
                 projectId={projectId}
                 userRole={session.user.role}
+                canShowAddItemForm={canShowAddItemForm}
               />
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Right Column - Add Line Item Section (Conditional) */}
+          {/* {canShowAddItemForm && (
+            <LineItemsSection
+              lineItems={lineItems}
+              areaId={area._id.toString()}
+              projectId={projectId}
+              userRole={session.user.role}
+              canShowAddItemForm={canShowAddItemForm}
+            />
+          )} */}
         </div>
       </main>
     </div>

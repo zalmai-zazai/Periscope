@@ -1,6 +1,7 @@
 import React from "react";
 import { ThemeToggle } from "./theme-toggle";
 import { LogoutButton } from "./LogoutButton";
+import Link from "next/link";
 
 interface NavbarProps {
   isAdmin: boolean;
@@ -13,9 +14,15 @@ const Navbar = ({ isAdmin, session }: NavbarProps) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Dashboard Title */}
-          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-            PeriScope
-          </h1>
+
+          <Link
+            href="/dashboard"
+            className="text-blue-600 dark:text-blue-400  text-sm sm:text-base"
+          >
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+              PeriScope
+            </h1>
+          </Link>
 
           {/* User Info Section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
