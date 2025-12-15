@@ -7,10 +7,10 @@ import Project from "@/models/Project";
 import LineItem from "@/models/LineItem";
 import { deleteImage } from "@/lib/cloudinary";
 
-export async function POST(
-  request: Request,
-  { params }: { params: { projectId: string } }
-) {
+export async function POST(request: Request, context: any) {
+  const params = await context.params; // unwrap
+  const projectId = params.projectId;
+
   try {
     const session = await getServerSession(authOptions);
 
@@ -104,10 +104,10 @@ export async function POST(
   }
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { projectId: string } }
-) {
+export async function GET(request: Request, context: any) {
+  const params = await context.params; // unwrap
+  const projectId = params.projectId;
+
   try {
     const session = await getServerSession(authOptions);
 
@@ -147,10 +147,10 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { projectId: string } }
-) {
+export async function DELETE(request: Request, context: any) {
+  const params = await context.params; // unwrap
+  const projectId = params.projectId;
+
   try {
     const session = await getServerSession(authOptions);
 
@@ -221,10 +221,10 @@ export async function DELETE(
   }
 }
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { projectId: string } }
-) {
+export async function PATCH(request: Request, context: any) {
+  const params = await context.params; // unwrap
+  const projectId = params.projectId;
+
   try {
     const session = await getServerSession(authOptions);
 

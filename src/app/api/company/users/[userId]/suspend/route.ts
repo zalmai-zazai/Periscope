@@ -23,7 +23,7 @@ export async function POST(
 
     await dbConnect();
 
-    const { userId } = params;
+    const { userId } = await params;
     const { reason } = await request.json();
 
     // Find the user to suspend

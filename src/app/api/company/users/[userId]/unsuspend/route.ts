@@ -23,7 +23,7 @@ export async function POST(
 
     await dbConnect();
 
-    const { userId } = params;
+    const { userId } = await params;
 
     // Find the user to unsuspend
     const userToUnsuspend = await User.findOne({

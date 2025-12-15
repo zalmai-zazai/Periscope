@@ -23,7 +23,7 @@ export async function DELETE(
 
     await dbConnect();
 
-    const { userId } = params;
+    const { userId } = await params;
 
     // Find the user to remove
     const userToRemove = await User.findOne({

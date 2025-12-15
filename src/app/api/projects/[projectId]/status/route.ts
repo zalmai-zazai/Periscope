@@ -4,10 +4,9 @@ import { authOptions } from "@/lib/auth-options";
 import dbConnect from "@/lib/mongodb";
 import Project from "@/models/Project";
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { projectId: string } }
-) {
+export async function PUT(request: Request, context: any) {
+  const params = await context.params; // unwrap
+  const projectId = params.projectId;
   try {
     const session = await getServerSession(authOptions);
 

@@ -5,10 +5,10 @@ import dbConnect from "@/lib/mongodb";
 import LineItem from "@/models/LineItem";
 import Area from "@/models/Area";
 
-export async function POST(
-  request: Request,
-  { params }: { params: { areaId: string } }
-) {
+export async function POST(request: Request, context: any) {
+  const params = await context.params; // unwrap
+  const areaId = params.areaId;
+
   try {
     const session = await getServerSession(authOptions);
 
@@ -69,10 +69,9 @@ export async function POST(
   }
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { areaId: string } }
-) {
+export async function GET(request: Request, context: any) {
+  const params = await context.params; // unwrap
+  const areaId = params.areaId;
   try {
     const session = await getServerSession(authOptions);
 
@@ -114,10 +113,9 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { areaId: string } }
-) {
+export async function DELETE(request: Request, context: any) {
+  const params = await context.params; // unwrap
+  const areaId = params.areaId;
   try {
     const session = await getServerSession(authOptions);
 
