@@ -37,7 +37,7 @@ export function LineItemsSection({
         {canShowAddItemForm && (
           <button
             onClick={() => setShowAddItemModal(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-xs md:text-sm"
           >
             + Add Line Item
           </button>
@@ -63,7 +63,7 @@ export function LineItemsSection({
               key={item._id.toString()}
               className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
-              <div className="flex justify-between items-start">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900 dark:text-white">
                     {item.name}
@@ -87,20 +87,31 @@ export function LineItemsSection({
       )}
 
       {showAddItemModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 sm:p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full sm:max-w-md md:max-w-lg max-h-[90vh] overflow-y-auto p-6 relative">
             <button
               onClick={() => setShowAddItemModal(false)}
               className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             >
               ✕
             </button>
+
             <AddLineItemForm
               areaId={areaId}
               projectId={projectId}
               userRole={userRole}
               onSuccess={() => setShowAddItemModal(false)}
             />
+
+            {/* Cancel Button */}
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setShowAddItemModal(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

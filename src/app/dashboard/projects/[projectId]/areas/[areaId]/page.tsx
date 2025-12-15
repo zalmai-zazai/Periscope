@@ -111,14 +111,34 @@ export default async function AreaDetailPage({
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {area.name}
-              </h1>
-              {area.description && (
-                <p className="text-gray-600 dark:text-gray-300 mt-1">
-                  {area.description}
-                </p>
-              )}
+              <div className="flex justify-between">
+                <div className="text-left">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {area.name}
+                  </h1>
+
+                  {area.description && (
+                    <>
+                      <p className="text-gray-600 dark:text-gray-300 mt-1">
+                        {area.description}
+                      </p>
+                    </>
+                  )}
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Line Items: {lineItems.length}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Created: {new Date(area.createdAt).toLocaleDateString()}
+                  </p>
+                  <AreaActions
+                    areaId={area._id.toString()}
+                    projectId={projectId}
+                    lineItemsCount={lineItems.length}
+                  />
+                </div>
+              </div>
 
               {/* MEASUREMENTS DISPLAY */}
               {(area.length || area.width) && (
@@ -328,20 +348,6 @@ export default async function AreaDetailPage({
                 Project: {(area.projectId as any).name}
               </p>
             </div>
-
-            <div className="text-right">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Line Items: {lineItems.length}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Created: {new Date(area.createdAt).toLocaleDateString()}
-              </p>
-              <AreaActions
-                areaId={area._id.toString()}
-                projectId={projectId}
-                lineItemsCount={lineItems.length}
-              />
-            </div>
           </div>
         </div>
 
@@ -371,17 +377,6 @@ export default async function AreaDetailPage({
               />
             )}
           </div>
-
-          {/* Right Column - Add Line Item Section (Conditional) */}
-          {/* {canShowAddItemForm && (
-            <LineItemsSection
-              lineItems={lineItems}
-              areaId={area._id.toString()}
-              projectId={projectId}
-              userRole={session.user.role}
-              canShowAddItemForm={canShowAddItemForm}
-            />
-          )} */}
         </div>
       </main>
     </div>
