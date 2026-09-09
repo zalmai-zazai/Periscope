@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface AddCostFormProps {
-  areaId: string; // ADD THIS
+  areaId: string; // ADD THIS and
   lineItemId: string;
   currentQuantity: number;
   currentUnit: string;
@@ -45,7 +45,7 @@ export function AddCostForm({
           body: JSON.stringify({
             unitCost: parseFloat(formData.unitCost),
           }),
-        }
+        },
       );
 
       const result = await response.json();
@@ -134,8 +134,8 @@ export function AddCostForm({
           {loading
             ? "Saving..."
             : existingUnitCost
-            ? "Update Cost"
-            : "Add Cost"}
+              ? "Update Cost"
+              : "Add Cost"}
         </button>
       </form>
     </div>
