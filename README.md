@@ -8,8 +8,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white)](#)
 [![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)](#)
 
-**Live Demo:** `https://your-live-demo-url.com`  
-**Portfolio:** `https://your-portfolio-url.com`
+**Live Demo:** `https://periscope-iota.vercel.app/`
 
 ---
 
@@ -17,9 +16,9 @@
 
 > Replace the placeholders below with screenshots from the deployed application.
 
-| Dashboard                                 | Project Management                      |
-| ----------------------------------------- | --------------------------------------- |
-| ![Dashboard](./screenshots/dashboard.png) | ![Projects](./screenshots/projects.png) |
+| Dashboard                    | Project Management                      |
+| ---------------------------- | --------------------------------------- |
+| ![Dashboard](./Periscpe.jpg) | ![Projects](./screenshots/projects.png) |
 
 | AI Property Sketch                        | Inspection & Line Items                     |
 | ----------------------------------------- | ------------------------------------------- |
