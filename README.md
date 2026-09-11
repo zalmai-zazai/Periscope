@@ -16,9 +16,9 @@
 
 > Replace the placeholders below with screenshots from the deployed application.
 
-| Dashboard                    | Project Management                      |
-| ---------------------------- | --------------------------------------- |
-| ![Dashboard](./Periscpe.jpg) | ![Projects](./screenshots/projects.png) |
+| Dashboard                           | Project Management                      |
+| ----------------------------------- | --------------------------------------- |
+| ![Dashboard](./public/Periscpe.jpg) | ![Projects](./screenshots/projects.png) |
 
 | AI Property Sketch                        | Inspection & Line Items                     |
 | ----------------------------------------- | ------------------------------------------- |
