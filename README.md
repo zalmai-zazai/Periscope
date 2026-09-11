@@ -22,7 +22,7 @@
 | -------------------------------------- | -------------------------------------- |
 | ![AI Sketch](./public/Ai%20Sketch.png) | ![Inspection](./public/inspection.png) |
 
-| Estimation Workflow                  | KPI Dashboard              |
+| PDF Reports Generation               | KPI Dashboard              |
 | ------------------------------------ | -------------------------- |
 | ![PDF Reports](./public/Reports.png) | ![KPIs](./public/kpis.png) |
 
