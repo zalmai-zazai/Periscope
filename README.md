@@ -14,8 +14,6 @@
 
 ## 📸 Screenshots
 
-> Replace the placeholders below with screenshots from the deployed application.
-
 | Dashboard                            | Project Management                 |
 | ------------------------------------ | ---------------------------------- |
 | ![Dashboard](./public/Dashboard.png) | ![Projects](./public/Projects.png) |
