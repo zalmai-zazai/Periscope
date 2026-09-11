@@ -18,15 +18,15 @@
 
 | Dashboard                            | Project Management                 |
 | ------------------------------------ | ---------------------------------- |
-| ![Dashboard](./public/Dashboard.jpg) | ![Projects](./public/Projects.png) |
+| ![Dashboard](./public/Dashboard.png) | ![Projects](./public/Projects.png) |
 
 | AI Property Sketch                     | Inspection & Line Items                |
 | -------------------------------------- | -------------------------------------- |
 | ![AI Sketch](./public/Ai%20Sketch.png) | ![Inspection](./public/inspection.png) |
 
-| Estimation Workflow                    | KPI Dashboard              |
-| -------------------------------------- | -------------------------- |
-| ![Estimation](./public/estimation.png) | ![KPIs](./public/kpis.png) |
+| Estimation Workflow                  | KPI Dashboard              |
+| ------------------------------------ | -------------------------- |
+| ![PDF Reports](./public/Reports.png) | ![KPIs](./public/kpis.png) |
 
 ---
 
