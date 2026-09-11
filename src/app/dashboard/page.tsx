@@ -113,15 +113,15 @@ export default async function DashboardPage() {
     switch (session.user?.role) {
       case "inspector":
         return baseBuckets.filter((bucket) =>
-          ["draft", "needs_field_review"].includes(bucket.id)
+          ["draft", "needs_field_review"].includes(bucket.id),
         );
       case "mitigation-tech":
         return baseBuckets.filter((bucket) =>
-          ["needs_field_review", "field_in_progress"].includes(bucket.id)
+          ["needs_field_review", "field_in_progress"].includes(bucket.id),
         );
       case "estimator":
         return baseBuckets.filter((bucket) =>
-          ["ready_for_estimate", "estimating", "sent"].includes(bucket.id)
+          ["ready_for_estimate", "estimating", "sent"].includes(bucket.id),
         );
       default:
         return baseBuckets; // Admin sees all
@@ -139,15 +139,15 @@ export default async function DashboardPage() {
     // Simple metrics calculation
     const completedProjects = projects.filter((p) => p.status === "sent");
     const readyProjects = projects.filter(
-      (p) => p.status === "ready_for_estimate"
+      (p) => p.status === "ready_for_estimate",
     );
     const estimatingProjects = projects.filter(
-      (p) => p.status === "estimating"
+      (p) => p.status === "estimating",
     );
 
     // Weekly throughput
     const weeklyThroughput = completedProjects.filter(
-      (p) => p.sentAt && new Date(p.sentAt) >= sevenDaysAgo
+      (p) => p.sentAt && new Date(p.sentAt) >= sevenDaysAgo,
     ).length;
 
     // Previous week throughput (for trend)
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
       (p) =>
         p.sentAt &&
         new Date(p.sentAt) >= fourteenDaysAgo &&
-        new Date(p.sentAt) < sevenDaysAgo
+        new Date(p.sentAt) < sevenDaysAgo,
     ).length;
 
     // Cycle time (simplified)
@@ -165,7 +165,7 @@ export default async function DashboardPage() {
         const ready = new Date(p.readyForEstimateAt!);
         const sent = new Date(p.sentAt!);
         return Math.ceil(
-          (sent.getTime() - ready.getTime()) / (1000 * 60 * 60 * 24)
+          (sent.getTime() - ready.getTime()) / (1000 * 60 * 60 * 24),
         );
       });
 
@@ -178,13 +178,13 @@ export default async function DashboardPage() {
     const pendingProjects = [...readyProjects, ...estimatingProjects];
     const oldestProject = pendingProjects.sort(
       (a, b) =>
-        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
     )[0];
 
     const oldestProjectAge = oldestProject
       ? Math.ceil(
           (now.getTime() - new Date(oldestProject.updatedAt).getTime()) /
-            (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24),
         )
       : 0;
 
@@ -222,7 +222,7 @@ export default async function DashboardPage() {
         (project) =>
           project.status === "sent" &&
           project.sentAt &&
-          new Date(project.sentAt) >= sevenDaysAgo
+          new Date(project.sentAt) >= sevenDaysAgo,
       )
       .forEach((project) => {
         const day = new Date(project.sentAt!).toLocaleDateString("en-US", {
@@ -242,14 +242,14 @@ export default async function DashboardPage() {
         (project) =>
           project.status === "sent" &&
           project.readyForEstimateAt &&
-          project.sentAt
+          project.sentAt,
       )
       .slice(0, 10) // Last 10 projects
       .map((project) => {
         const readyDate = new Date(project.readyForEstimateAt!);
         const sentDate = new Date(project.sentAt!);
         const cycleTime = Math.ceil(
-          (sentDate.getTime() - readyDate.getTime()) / (1000 * 60 * 60 * 24)
+          (sentDate.getTime() - readyDate.getTime()) / (1000 * 60 * 60 * 24),
         );
 
         return {
@@ -310,7 +310,7 @@ export default async function DashboardPage() {
         : 0;
     const weeklyScore = Math.min(
       10,
-      Math.max(1, 10 - avgCycleTime + projects.length * 0.5)
+      Math.max(1, 10 - avgCycleTime + projects.length * 0.5),
     );
 
     return {
@@ -322,7 +322,7 @@ export default async function DashboardPage() {
       totalProjects: projects.length,
       completedThisWeek: throughputData.reduce(
         (sum, day) => sum + day.throughput,
-        0
+        0,
       ),
       onTimeRate:
         completedProjects.length > 0
@@ -332,16 +332,16 @@ export default async function DashboardPage() {
                 const cycleTime = Math.ceil(
                   (new Date(p.sentAt).getTime() -
                     new Date(p.readyForEstimateAt).getTime()) /
-                    (1000 * 60 * 60 * 24)
+                    (1000 * 60 * 60 * 24),
                 );
                 return cycleTime <= 5;
               }).length /
                 completedProjects.length) *
-                100
+                100,
             )
           : 0,
       activeProjects: projects.filter(
-        (p) => !["sent", "draft"].includes(p.status)
+        (p) => !["sent", "draft"].includes(p.status),
       ).length,
     };
   };
@@ -356,15 +356,15 @@ export default async function DashboardPage() {
 
     // Filter projects for different time periods
     const weeklyProjects = projects.filter(
-      (p) => new Date(p.createdAt) >= sevenDaysAgo
+      (p) => new Date(p.createdAt) >= sevenDaysAgo,
     );
     const monthlyProjects = projects.filter(
-      (p) => new Date(p.createdAt) >= thirtyDaysAgo
+      (p) => new Date(p.createdAt) >= thirtyDaysAgo,
     );
 
     const completedProjects = projects.filter((p) => p.status === "sent");
     const weeklyCompleted = completedProjects.filter(
-      (p) => p.sentAt && new Date(p.sentAt) >= sevenDaysAgo
+      (p) => p.sentAt && new Date(p.sentAt) >= sevenDaysAgo,
     );
 
     // Revenue Estimation (simplified - you can enhance this later)
@@ -385,7 +385,7 @@ export default async function DashboardPage() {
         (p) =>
           ["ready_for_estimate", "estimating"].includes(p.status) &&
           new Date(p.updatedAt) <
-            new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000)
+            new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
       ).length,
 
       // Business Metrics
@@ -411,7 +411,7 @@ export default async function DashboardPage() {
 
     // Only count projects that have BOTH timestamps
     const measurableProjects = completedProjects.filter(
-      (project) => project.readyForEstimateAt && project.sentAt
+      (project) => project.readyForEstimateAt && project.sentAt,
     );
 
     if (measurableProjects.length === 0) return 0; // No measurable projects = 0%
@@ -420,14 +420,14 @@ export default async function DashboardPage() {
       const readyDate = new Date(project.readyForEstimateAt);
       const sentDate = new Date(project.sentAt);
       const cycleTime = Math.ceil(
-        (sentDate.getTime() - readyDate.getTime()) / (1000 * 60 * 60 * 24)
+        (sentDate.getTime() - readyDate.getTime()) / (1000 * 60 * 60 * 24),
       );
 
       return cycleTime <= 5; // 5 days is considered "on time"
     });
 
     return Math.round(
-      (onTimeProjects.length / measurableProjects.length) * 100
+      (onTimeProjects.length / measurableProjects.length) * 100,
     );
   };
 
@@ -450,7 +450,7 @@ export default async function DashboardPage() {
         ];
         const lastUpdated = new Date(project.updatedAt);
         const daysStuck = Math.ceil(
-          (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24)
+          (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24),
         );
 
         return activeStages.includes(project.status) && daysStuck >= 5;
@@ -458,7 +458,7 @@ export default async function DashboardPage() {
       .map((project) => {
         const lastUpdated = new Date(project.updatedAt);
         const daysStuck = Math.ceil(
-          (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24)
+          (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24),
         );
 
         return {
@@ -483,10 +483,10 @@ export default async function DashboardPage() {
             {isAdmin
               ? "Company Admin Dashboard"
               : isEstimator
-              ? `Estimator Dashboard`
-              : isInspector
-              ? "Inspector Dashboard"
-              : "Mitigation Tech Dashboard"}
+                ? `Estimator Dashboard`
+                : isInspector
+                  ? "Inspector Dashboard"
+                  : "Mitigation Tech Dashboard"}
           </h2>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
             {isAdmin
@@ -627,11 +627,11 @@ export default async function DashboardPage() {
             </div>
           )}
         </div>
-        {/* <div className="mt-6">
-          <AttentionProjects projects={attentionProjects} />
+        <div className="mt-6">
+          {/* <AttentionProjects projects={attentionProjects} /> */}
         </div>
         <EnhancedMetricsPanel chartData={chartData} />
-        <KPIPanel metrics={kpiMetrics} /> */}
+        <KPIPanel metrics={kpiMetrics} />
         {/* Role-based quick stats */}
         <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
@@ -692,10 +692,10 @@ export default async function DashboardPage() {
                 {isAdmin
                   ? "Administrator"
                   : isEstimator
-                  ? `Estimator`
-                  : isInspector
-                  ? "Inspector"
-                  : "Mitigation Tech"}
+                    ? `Estimator`
+                    : isInspector
+                      ? "Inspector"
+                      : "Mitigation Tech"}
               </p>
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Your Role
