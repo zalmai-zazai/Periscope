@@ -16,17 +16,17 @@
 
 > Replace the placeholders below with screenshots from the deployed application.
 
-| Dashboard                           | Project Management                      |
-| ----------------------------------- | --------------------------------------- |
-| ![Dashboard](./public/Periscpe.jpg) | ![Projects](./screenshots/projects.png) |
+| Dashboard                            | Project Management                 |
+| ------------------------------------ | ---------------------------------- |
+| ![Dashboard](./public/Dashboard.jpg) | ![Projects](./public/Projects.png) |
 
-| AI Property Sketch                        | Inspection & Line Items                     |
-| ----------------------------------------- | ------------------------------------------- |
-| ![AI Sketch](./screenshots/ai-sketch.png) | ![Inspection](./screenshots/inspection.png) |
+| AI Property Sketch                     | Inspection & Line Items                |
+| -------------------------------------- | -------------------------------------- |
+| ![AI Sketch](./public/Ai%20Sketch.png) | ![Inspection](./public/inspection.png) |
 
-| Estimation Workflow                         | KPI Dashboard                   |
-| ------------------------------------------- | ------------------------------- |
-| ![Estimation](./screenshots/estimation.png) | ![KPIs](./screenshots/kpis.png) |
+| Estimation Workflow                    | KPI Dashboard              |
+| -------------------------------------- | -------------------------- |
+| ![Estimation](./public/estimation.png) | ![KPIs](./public/kpis.png) |
 
 ---
 
